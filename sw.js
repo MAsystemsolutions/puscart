@@ -1,7 +1,7 @@
 /* Puscart offline helper.
    Keeps the app saved on the phone so it opens instantly and works without internet.
    When you upload a new index.html, change the version number below (v2 → v3) so phones update. */
-const CACHE = 'puscart-v2';
+const CACHE = 'puscart-v3';
 const FILES = ['./', './index.html', './manifest.json', './logo.png'];
 
 self.addEventListener('install', e => {

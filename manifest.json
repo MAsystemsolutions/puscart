@@ -1,0 +1,26 @@
+{
+  "name": "Puscart POS",
+  "short_name": "Puscart",
+  "description": "Tinda mo, alaga namin. POS at Imbentaryo.",
+  "start_url": "/puscart/",
+  "id": "/puscart/?app=puscart",
+  "display": "standalone",
+  "scope": "/puscart/",
+  "background_color": "#ffe4ec",
+  "theme_color": "#ffe4ec",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
