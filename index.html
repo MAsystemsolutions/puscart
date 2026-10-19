@@ -1,0 +1,2130 @@
+<!doctype html>
+<html lang="tl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Puscart</title>
+<meta name="theme-color" content="#ffe4ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Puscart">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<style>
+/* ================= PUSCART STYLES ================= */
+:root{
+  --bg:#ffe4ec; --bg2:#fff0f4; --blush:#ffc2cf; --rosas:#d94c6e; --rosas2:#b83a5a; --tang:#f59a3c; --tang2:#fff1e2;
+  --teal:#2bb5a0; --teal2:#ddf5f0; --tealD:#1d8a7a; --ink:#3a2f5b; --ink2:#5b4f80; --gold:#ffd66b; --gold2:#fff6d9;
+  --muted:#8a7ea8; --line:#f8d5df; --white:#fff; --cream:#fff8fa; --red:#e0475f; --red2:#ffe1e6;
+  --r:20px; --shadow:0 2px 0 rgba(58,47,91,.06), 0 6px 18px rgba(217,76,110,.08);
+  --font: ui-rounded, "SF Pro Rounded", "Nunito", "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --safeb: env(safe-area-inset-bottom, 0px); --safet: env(safe-area-inset-top, 0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overflow-x:hidden;margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;-webkit-text-size-adjust:100%}
+body{min-height:100vh;overscroll-behavior-y:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0;touch-action:manipulation}
+input,select,textarea{font:inherit;color:var(--ink)}
+.hidden{display:none!important}
+button:focus{outline:none}button:focus-visible{outline:3px solid var(--blush)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.b{font-weight:800}
+.mascot{display:block;width:100%;height:auto}
+
+/* ---- layout ---- */
+#app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(92px + var(--safeb))}
+#app.selling{padding-bottom:calc(170px + var(--safeb))}
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 82%,rgba(255,228,236,0));padding:calc(10px + var(--safet)) 14px 8px;display:flex;align-items:center;gap:9px}
+.top img{width:38px;height:38px;border-radius:12px}
+.brand{font-weight:900;font-size:20px;letter-spacing:.5px;line-height:1;white-space:nowrap}
+.brand span{color:var(--rosas)}
+.bizname{font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .tb{min-width:0;flex:1 1 auto;overflow:hidden}
+.top>*{flex-shrink:0}.top .tb{flex-shrink:1}
+.iconbtn{width:40px;height:40px;border-radius:14px;background:var(--white);display:grid;place-items:center;font-size:19px;box-shadow:var(--shadow);position:relative}
+.sync{font-size:11px;font-weight:800;padding:6px 9px;max-width:104px;overflow:hidden;text-overflow:ellipsis;border-radius:99px;background:var(--white);box-shadow:var(--shadow);white-space:nowrap}
+.sync.ok{color:var(--tealD)} .sync.wait{color:#b7791f} .sync.off{color:var(--muted)}
+.demo-chip{font-size:10px;background:var(--gold);padding:2px 7px;border-radius:99px;font-weight:900;margin-left:4px;vertical-align:2px}
+@media (max-width:400px){.top{gap:6px;padding-left:10px;padding-right:10px}.top img{width:32px;height:32px}.brand{font-size:17px}.iconbtn{width:36px;height:36px;font-size:17px}.sync{max-width:78px}}
+
+.view{padding:2px 14px 14px;animation:fade .12s ease-out}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+h2{font-size:21px;margin:8px 2px 12px;font-weight:900}
+h3{font-size:15px;margin:16px 2px 8px;font-weight:900}
+.card{background:var(--white);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+
+/* ---- scan bar (Benta) ---- */
+.scanbar{display:flex;gap:8px;align-items:center;margin:2px 0 10px}
+.scanin{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:var(--white);border-radius:18px;padding:0 12px;box-shadow:var(--shadow);border:2px solid transparent}
+.scanin:focus-within{border-color:var(--blush)}
+.scanin input{border:0;outline:0;background:transparent;padding:14px 0;width:100%;min-width:0;font-weight:800;font-size:16px}
+.cambtn{width:58px;height:54px;border-radius:18px;background:var(--rosas);color:#fff;font-size:26px;display:grid;place-items:center;box-shadow:0 6px 14px rgba(217,76,110,.35);flex:none}
+.cambtn:active,.btn:active,.qt:active,.chip:active,.iconbtn:active,.qbtn:active{transform:scale(.96)}
+.sugg{background:var(--white);border-radius:18px;box-shadow:var(--shadow);margin:-4px 0 10px;overflow:hidden}
+.sugg button{display:flex;width:100%;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px dashed var(--line);text-align:left;font-weight:800}
+.sugg button:last-child{border:0}
+.sugg .p{margin-left:auto;color:var(--rosas);font-weight:900;white-space:nowrap}
+.hello{display:flex;align-items:flex-end;gap:6px;margin:0 0 10px}
+.hello .m{width:62px;flex:none}
+.bubble{background:var(--white);border-radius:18px 18px 18px 6px;padding:10px 13px;box-shadow:var(--shadow);font-weight:800;font-size:14px;line-height:1.35}
+.bubble small{display:block;font-weight:700;color:var(--muted);font-size:12px;margin-top:2px}
+
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px;margin-bottom:12px}
+.qt{background:var(--white);border-radius:18px;padding:10px 8px;box-shadow:var(--shadow);text-align:center;display:flex;flex-direction:column;gap:3px;min-height:72px;justify-content:center;position:relative}
+.qt .n{font-weight:900;font-size:13px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.qt .p{font-weight:900;font-size:13px;color:var(--rosas)}
+.qt.add{background:var(--bg2);border:2px dashed var(--blush);box-shadow:none;color:var(--rosas2)}
+.qt .badge{position:absolute;top:-5px;right:-5px}
+
+.cart .ci{display:flex;align-items:center;gap:8px;padding:10px 2px;border-bottom:1px dashed var(--line)}
+.cart .ci:last-child{border:0}
+.ci .nm{flex:1;min-width:0}
+.ci .nm b{display:block;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+.ci .nm span{font-size:12px;color:var(--muted);font-weight:700}
+.qty{display:flex;align-items:center;gap:4px;background:var(--bg2);border-radius:14px;padding:3px}
+.qty button{width:34px;height:34px;border-radius:11px;background:var(--white);font-weight:900;font-size:19px;box-shadow:var(--shadow)}
+.qty span{min-width:30px;text-align:center;font-weight:900;font-size:16px}
+.ci .lt{font-weight:900;min-width:76px;text-align:right;white-space:nowrap}
+.ci.flash{animation:flash .5s ease}
+@keyframes flash{0%{background:var(--gold2)}100%{background:transparent}}
+
+.paybar{position:fixed;left:0;right:0;bottom:calc(70px + var(--safeb));z-index:25;display:flex;justify-content:center;pointer-events:none;padding:0 10px}
+.paybar .in{pointer-events:auto;width:100%;max-width:540px;background:var(--ink);color:#fff;border-radius:22px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 24px rgba(58,47,91,.3)}
+.paybar .t{flex:1;min-width:0}
+.paybar .t small{display:block;font-size:12px;opacity:.8;font-weight:800}
+.paybar .t b{font-size:24px;font-weight:900;letter-spacing:-.3px}
+.paybar .go{background:var(--teal);color:#fff;font-weight:900;font-size:17px;border-radius:16px;padding:14px 18px;white-space:nowrap}
+.paybar .clr{width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.12);font-size:17px}
+.paybar.empty .go{background:rgba(255,255,255,.18);color:rgba(255,255,255,.7)}
+
+/* ---- chips / lists ---- */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:8px 13px;border-radius:99px;background:var(--white);font-weight:800;font-size:14px;box-shadow:var(--shadow);border:2px solid transparent;white-space:nowrap}
+.chip.on{background:var(--ink);color:#fff}
+.item{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px dashed var(--line);width:100%;text-align:left}
+.item:last-child{border-bottom:0}
+.item .ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;flex:none;background:var(--bg2)}
+.item .mid{flex:1;min-width:0}
+.item .t1{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .t2{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .val{font-weight:900;white-space:nowrap;text-align:right}
+.item .val small{display:block;font-size:11px;color:var(--muted);font-weight:800}
+.item.void .t1,.item.void .val{text-decoration:line-through;opacity:.55}
+.dayhead{display:flex;justify-content:space-between;font-weight:900;font-size:13px;color:var(--muted);margin:14px 6px 6px}
+.empty{text-align:center;padding:22px 10px;color:var(--muted);font-weight:800}
+.empty .m{width:100px;margin:0 auto 8px}
+.search{width:100%;padding:13px 15px;border-radius:16px;border:2px solid var(--line);background:var(--white);margin-bottom:10px;outline:0}
+.search:focus{border-color:var(--blush)}
+.badge{font-size:11px;font-weight:900;padding:3px 8px;border-radius:99px;background:var(--teal2);color:var(--tealD);white-space:nowrap}
+.badge.low{background:var(--gold2);color:#a86b00}
+.badge.out{background:var(--red2);color:var(--red)}
+.tag{font-size:11px;font-weight:900;padding:3px 8px;border-radius:99px;background:var(--red2);color:var(--rosas)}
+.row2{display:flex;gap:10px}.row2>*{flex:1}
+.actrow{display:flex;gap:8px;margin-bottom:12px}
+.actrow .btn{padding:13px 8px;font-size:15px}
+
+/* ---- buttons / forms ---- */
+.btn{display:block;width:100%;padding:15px;border-radius:18px;font-weight:900;font-size:17px;text-align:center;box-shadow:var(--shadow)}
+.btn.main{background:var(--ink);color:#fff}
+.btn.pink{background:var(--rosas);color:#fff}
+.btn.teal{background:var(--teal);color:#fff}
+.btn.soft{background:var(--white);color:var(--ink)}
+.btn.danger{background:var(--white);color:var(--red)}
+.btn[disabled]{opacity:.5}
+.field{margin-bottom:11px}
+.field label{display:block;font-weight:900;font-size:13px;margin:0 4px 5px;color:var(--ink2)}
+.field label small{font-weight:700;color:var(--muted)}
+.inp{width:100%;padding:13px 14px;border-radius:15px;border:2px solid var(--line);background:var(--white);outline:0;font-weight:700}
+.inp:focus{border-color:var(--blush)}
+.inrow{display:flex;gap:8px}.inrow .inp{flex:1;min-width:0}
+.inrow .sbtn{flex:none;width:52px;border-radius:15px;background:var(--rosas);color:#fff;font-size:22px}
+.amtwrap{background:var(--white);border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;margin-bottom:12px;border:2px solid transparent}
+.amtwrap:focus-within{border-color:var(--blush)}
+.amtwrap span{font-size:26px;font-weight:900;color:var(--muted)}
+.amtwrap input{border:0;outline:0;font-size:32px;font-weight:900;width:100%;background:transparent;min-width:0}
+.seg{display:flex;background:var(--white);border-radius:16px;padding:4px;gap:4px;box-shadow:var(--shadow);margin-bottom:12px}
+.seg button{flex:1;padding:11px 6px;border-radius:13px;font-weight:900;font-size:15px}
+.seg button.on{background:var(--ink);color:#fff}
+.cats{display:flex;flex-wrap:wrap;gap:7px}
+.cat{padding:9px 12px;border-radius:14px;background:var(--white);font-weight:800;font-size:14px;border:2px solid transparent;box-shadow:var(--shadow)}
+.cat.sel{border-color:var(--rosas);background:var(--bg2)}
+.switch{width:52px;height:30px;border-radius:99px;background:#e8d9e0;position:relative;flex:none;transition:background .15s}
+.switch:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.switch.on{background:var(--teal)}.switch.on:after{left:25px}
+.lockbar{background:var(--gold2);border-radius:16px;padding:12px 14px;font-weight:800;font-size:14px;line-height:1.35;margin-bottom:12px}
+.infobar{background:var(--bg2);border-radius:14px;padding:10px 12px;font-weight:700;font-size:13px;color:var(--ink2);margin:8px 0;line-height:1.4}
+
+/* ---- sheet ---- */
+.backdrop{position:fixed;inset:0;background:rgba(58,47,91,.42);z-index:60;opacity:0;transition:opacity .15s}
+.backdrop.show{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;margin:0 auto;max-width:560px;background:var(--cream);border-radius:26px 26px 0 0;max-height:92vh;overflow-y:auto;padding:8px 16px calc(18px + var(--safeb));transform:translateY(100%);transition:transform .18s ease-out;-webkit-overflow-scrolling:touch}
+.sheet.show{transform:none}
+.grab{width:44px;height:5px;border-radius:9px;background:#efc6d2;margin:2px auto 8px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sheet-head h2{margin:0}
+.x{width:40px;height:40px;border-radius:14px;background:var(--white);font-size:20px;font-weight:900;box-shadow:var(--shadow);flex:none}
+.opts{display:grid;gap:9px}
+.opt{background:var(--white);border-radius:18px;padding:14px 15px;font-weight:900;font-size:16px;text-align:left;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);border:3px solid transparent;width:100%}
+.opt .e{font-size:26px}
+.opt.sel{border-color:var(--rosas);background:var(--bg2)}
+.opt small{display:block;font-size:12px;color:var(--muted);font-weight:700}
+
+/* ---- pay ---- */
+.paytot{text-align:center;background:var(--ink);color:#fff;border-radius:22px;padding:14px;margin-bottom:12px}
+.paytot small{display:block;font-weight:800;opacity:.8;font-size:13px}
+.paytot b{font-size:38px;font-weight:900;letter-spacing:-.5px}
+.qbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.qbtn{background:var(--white);border-radius:15px;padding:12px 4px;font-weight:900;box-shadow:var(--shadow);font-size:15px}
+.qbtn.exact{background:var(--teal2);color:var(--tealD)}
+.change{display:flex;justify-content:space-between;align-items:center;background:var(--gold2);border-radius:18px;padding:12px 16px;margin-bottom:12px;font-weight:900}
+.change b{font-size:28px}
+.change.short{background:var(--red2);color:var(--red)}
+.receipt{background:#fff;border-radius:16px;padding:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.5;box-shadow:var(--shadow);margin-bottom:12px}
+.receipt .c{text-align:center}
+.receipt .rw{display:flex;justify-content:space-between;gap:10px}
+.receipt hr{border:0;border-top:1px dashed #bbb;margin:6px 0}
+
+/* ---- scanner ---- */
+.scanner{position:fixed;inset:0;z-index:90;background:#120d1f;display:flex;flex-direction:column}
+.scanner video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scanner .shade{position:absolute;inset:0;pointer-events:none}
+.scanner .box{position:absolute;left:8%;right:8%;top:38%;height:22%;border-radius:22px;box-shadow:0 0 0 9999px rgba(18,13,31,.55);border:3px solid rgba(255,255,255,.9)}
+.scanner .box.hit{border-color:var(--teal);box-shadow:0 0 0 9999px rgba(18,13,31,.55),0 0 0 6px rgba(43,181,160,.5)}
+.scanner .laser{position:absolute;left:6%;right:6%;top:50%;height:2px;background:var(--rosas);box-shadow:0 0 8px var(--rosas);animation:laser 1.6s ease-in-out infinite}
+@keyframes laser{0%,100%{transform:translateY(-28px)}50%{transform:translateY(28px)}}
+.scanner .sbar{position:relative;z-index:2;display:flex;align-items:center;gap:10px;padding:calc(12px + var(--safet)) 14px 10px;color:#fff}
+.scanner .sbar b{flex:1;font-size:17px}
+.scanner .sbtn2{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.18);color:#fff;font-size:20px;display:grid;place-items:center}
+.scanner .foot{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:12px 14px calc(16px + var(--safeb));display:flex;flex-direction:column;gap:10px}
+.scanner .tip{display:flex;align-items:flex-end;gap:8px}
+.scanner .tip .m{width:64px;flex:none}
+.scanner .tip .bubble{font-size:14px}
+.scanner .last{background:rgba(255,255,255,.95);border-radius:16px;padding:10px 14px;font-weight:900;display:flex;justify-content:space-between;gap:10px}
+
+/* ---- full screens ---- */
+.screen{position:fixed;inset:0;z-index:80;background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:calc(16px + var(--safet)) 18px calc(18px + var(--safeb))}
+.screen .inner{width:100%;max-width:460px;display:flex;flex-direction:column;flex:1}
+.wz-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.dots{display:flex;gap:5px;flex:1;justify-content:center}
+.dots i{width:8px;height:8px;border-radius:9px;background:#fff;opacity:.85}
+.dots i.on{background:var(--rosas);width:22px}
+.wz-m{width:140px;margin:6px auto 0}
+.wz-q{background:var(--white);border-radius:24px;padding:15px 18px;box-shadow:var(--shadow);font-weight:900;font-size:19px;line-height:1.3;text-align:center;margin:10px 0 14px;position:relative}
+.wz-q:before{content:"";position:absolute;top:-10px;left:50%;margin-left:-10px;border:10px solid transparent;border-top:0;border-bottom-color:var(--white)}
+.wz-q small{display:block;font-size:14px;color:var(--muted);font-weight:700;margin-top:6px}
+.wz-foot{margin-top:auto;padding-top:16px;display:flex;gap:10px}
+.wz-input{width:100%;padding:15px;border-radius:20px;border:3px solid var(--white);background:var(--white);font-size:20px;font-weight:800;text-align:center;outline:0;box-shadow:var(--shadow)}
+.wz-input:focus{border-color:var(--blush)}
+.inst-step{display:flex;gap:12px;align-items:flex-start;background:var(--white);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:10px;font-weight:700;line-height:1.35}
+.inst-step .n{width:30px;height:30px;border-radius:10px;background:var(--rosas);color:#fff;display:grid;place-items:center;font-weight:900;flex:none}
+.kbd{display:inline-flex;align-items:center;gap:4px;background:var(--bg2);border-radius:8px;padding:1px 7px;font-weight:900;white-space:nowrap}
+.pointer{position:fixed;z-index:90;font-size:52px;animation:bounce 1s infinite;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))}
+.pointer.bc{bottom:calc(6px + var(--safeb));left:50%;margin-left:-26px}
+.pointer.br{bottom:calc(6px + var(--safeb));right:14px}
+.pointer.tr{top:calc(4px + var(--safet));right:10px;animation-name:bounceUp}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
+@keyframes bounceUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* ---- tour ---- */
+.blk{position:fixed;z-index:100;background:transparent}
+.ring{position:fixed;z-index:101;border-radius:18px;box-shadow:0 0 0 4px var(--gold),0 0 0 9999px rgba(40,26,60,.62);pointer-events:none;transition:all .2s ease}
+.coach{position:fixed;z-index:102;left:16px;right:16px;margin:0 auto;max-width:420px;background:var(--white);border-radius:22px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;gap:10px;align-items:flex-start;transition:top .2s ease}
+.coach .m{width:56px;flex:none}
+.coach .txt{font-weight:800;line-height:1.35;font-size:15px}
+.coach .act{display:flex;gap:8px;margin-top:10px;align-items:center}
+.coach .act .go{background:var(--rosas);color:#fff;border-radius:12px;padding:9px 16px;font-weight:900}
+.coach .act .skip{font-size:12px;color:var(--muted);font-weight:800;margin-left:auto}
+.coach .stepn{font-size:11px;color:var(--muted);font-weight:800}
+
+/* ---- owner / log ---- */
+.belln{position:absolute;top:-5px;right:-5px;background:var(--rosas);color:#fff;border-radius:99px;font-size:11px;font-weight:900;min-width:19px;height:19px;padding:0 5px;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg)}
+.role{font-size:10px;font-weight:900;padding:2px 7px;border-radius:99px;background:var(--bg2);color:var(--ink2);margin-left:4px;vertical-align:1px}
+.role.owner{background:var(--teal2);color:var(--tealD)}
+.pinbox{display:flex;gap:10px;justify-content:center;margin:6px 0 14px}
+.pinbox input{width:56px;height:64px;border-radius:18px;border:3px solid var(--white);background:var(--white);text-align:center;font-size:30px;font-weight:900;box-shadow:var(--shadow);outline:0}
+.pinbox input:focus{border-color:var(--blush)}
+.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 2px;border-bottom:1px dashed var(--line);font-weight:800}
+.set:last-child{border:0}
+.set .muted{font-weight:700;font-size:13px}
+.set button.lnk{color:var(--rosas2);font-weight:900;background:var(--bg2);padding:8px 12px;border-radius:12px;font-size:14px;white-space:nowrap}
+.log{display:flex;gap:10px;padding:10px 2px;border-bottom:1px dashed var(--line)}
+.log .av{width:36px;height:36px;border-radius:12px;background:var(--bg2);display:grid;place-items:center;font-weight:900;flex:none}
+.log .t1{font-weight:800;font-size:14px}
+.log .t2{font-size:12px;color:var(--muted);font-weight:700}
+.alertcard{display:flex;align-items:center;gap:10px;background:var(--gold2);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow);margin-bottom:12px;font-weight:800;width:100%;text-align:left}
+
+/* ---- reports ---- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{border-radius:var(--r);padding:13px;box-shadow:var(--shadow);background:var(--white);min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.stat .lbl{font-weight:900;font-size:13px}
+.stat .amt{font-weight:900;font-size:21px;letter-spacing:-.3px;margin-top:6px;word-break:break-all}
+.stat .sub{font-size:12px;font-weight:700;color:var(--muted)}
+.stat.big{grid-column:1/-1;background:var(--ink);color:#fff}.stat.big .sub{color:#d9d2ee}
+.stat.t{background:var(--teal2)} .stat.g{background:var(--gold2)} .stat.p{background:var(--bg2)}
+.bars{display:flex;align-items:flex-end;gap:3px;height:120px;padding-top:6px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.bar i{display:block;border-radius:5px 5px 2px 2px;min-height:2px;background:var(--rosas)}
+.barlbl{display:flex;gap:3px;font-size:9px;color:var(--muted);font-weight:800}
+.barlbl span{flex:1;text-align:center}
+.hbar{margin:9px 0}
+.hbar .h{display:flex;justify-content:space-between;gap:8px;font-weight:800;font-size:14px;margin-bottom:4px}
+.hbar .h span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar .track{height:11px;border-radius:9px;background:var(--bg2);overflow:hidden}
+.hbar .fill{height:100%;border-radius:9px;background:var(--rosas)}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl td{padding:8px 2px;border-bottom:1px dashed var(--line);vertical-align:top}
+.tbl td.r{text-align:right;font-weight:800;white-space:nowrap}
+
+/* ---- toast ---- */
+.toast{position:fixed;left:50%;bottom:calc(100px + var(--safeb));transform:translateX(-50%) translateY(16px);z-index:120;background:var(--white);border-radius:20px;padding:6px 14px 6px 6px;display:flex;align-items:center;gap:8px;box-shadow:0 10px 26px rgba(58,47,91,.25);font-weight:900;opacity:0;transition:all .18s;pointer-events:none;width:max-content;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.toast .m{width:44px;flex:none}
+#app.selling~.toast{bottom:calc(176px + var(--safeb))}
+
+/* ---- bottom nav ---- */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;pointer-events:none}
+.nav-in{pointer-events:auto;width:100%;max-width:560px;background:var(--white);border-radius:24px 24px 0 0;box-shadow:0 -6px 22px rgba(217,76,110,.12);display:flex;align-items:flex-end;justify-content:space-around;padding:7px 6px calc(7px + var(--safeb))}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:800;color:var(--muted);padding:4px 0}
+.nav button .e{font-size:22px;filter:grayscale(.6);opacity:.7}
+.nav button.on{color:var(--rosas2)} .nav button.on .e{filter:none;opacity:1}
+
+/* ---- splash ---- */
+#splash{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .2s}
+#splash img{width:120px;height:120px;border-radius:32px;box-shadow:var(--shadow);animation:hop 1.2s ease-in-out infinite}
+#splash .brand{font-size:30px}
+#splash .tag2{color:var(--muted);font-weight:800;font-size:14px}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hop{animation:hop 1.6s ease-in-out infinite}
+@media print{ body > *{display:none!important} body.printing #printArea{display:block!important} }
+#printArea{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="splash">
+  <img src="logo.png" alt="">
+  <div class="brand">PUS<span>CART</span></div>
+  <div class="tag2">Tinda mo, alaga namin. 🐱</div>
+</div>
+<div id="app" class="hidden">
+  <div class="top">
+    <img src="logo.png" alt="Puscart">
+    <div class="tb">
+      <div class="brand">PUS<span>CART</span><span id="demoChip" class="demo-chip hidden">DEMO</span></div>
+      <div class="bizname" id="bizName"></div>
+    </div>
+    <div class="sync ok" id="syncBadge">✓</div>
+    <button class="iconbtn hidden" id="btn-bell" aria-label="Alerts">🔔<span class="belln hidden" id="bellN"></span></button>
+    <button class="iconbtn" id="btn-settings" aria-label="Settings">⚙️</button>
+  </div>
+  <div id="view"></div>
+</div>
+<div class="paybar hidden" id="payBar"><div class="in">
+  <button class="clr" id="pb-clear" aria-label="Clear">🗑️</button>
+  <div class="t"><small id="pb-n"></small><b id="pb-total"></b></div>
+  <button class="go" id="pb-pay"></button>
+</div></div>
+<nav class="nav hidden" id="nav"><div class="nav-in">
+  <button data-v="sell" id="nav-sell"><span class="e">🛒</span><span data-l="sell"></span></button>
+  <button data-v="items" id="nav-items"><span class="e">📦</span><span data-l="items"></span></button>
+  <button data-v="sales" id="nav-sales"><span class="e">🧾</span><span data-l="sales"></span></button>
+  <button data-v="report" id="nav-report"><span class="e">📊</span><span data-l="report"></span></button>
+  <button data-v="help" id="nav-help" class="hidden"><span class="e">❓</span><span data-l="help"></span></button>
+</div></nav>
+<div id="toast" class="toast"></div>
+<div id="printArea"></div>
+<script>
+/* =================================================================
+   PUSCART — POS + Imbentaryo   ·   "Tinda mo, alaga namin."
+   ================================================================= */
+
+// ====== 1. PASTE YOUR PUSCART APPS SCRIPT WEB APP URL HERE ======
+const API_URL = 'https://script.google.com/macros/s/AKfycbyStbnjma9PcSq1b2zzknErr40PPbMFu1XoL8XHs0x_FH-dmKMXGtwgmAlHIMa4oLOQ0Q/exec';
+// =================================================================
+
+const VERSION = '1.0.0';
+const qs = new URLSearchParams(location.search);
+// Puscart and Kwentoink live on the same website, so everything here uses the "pc_" prefix
+const CODE = (() => {
+  let c = (qs.get('id') || '').trim();
+  try {
+    if (c) localStorage.setItem('pc_lastCode', JSON.stringify(c));
+    else { c = JSON.parse(localStorage.getItem('pc_lastCode') || '""') || ''; if (c) history.replaceState(null, '', location.pathname + '?id=' + c); }
+  } catch (e) { }
+  return c;
+})();
+const DEMO = CODE === 'demo' || API_URL.indexOf('PASTE_') === 0;
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const UA = navigator.userAgent;
+const IS_IOS = /iPad|iPhone|iPod/.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const IS_ANDROID = /Android/i.test(UA);
+const IN_APP = /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Messenger|Line\/|TikTok|MicroMessenger/i.test(UA);
+const IS_CRIOS = /CriOS|EdgiOS|FxiOS/.test(UA);
+if (!IS_IOS) { const ml = document.createElement('link'); ml.rel = 'manifest'; ml.href = 'manifest.json'; document.head.appendChild(ml); }
+const SAFARI_VER = (() => { const m = UA.match(/Version\/(\d+)/); return m ? +m[1] : 0; })();
+
+/* ---------- local device storage ---------- */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem('pc_' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('pc_' + k, JSON.stringify(v)); } catch (e) { } },
+  del(k) { try { localStorage.removeItem('pc_' + k); } catch (e) { } }
+};
+const DB = (() => {
+  let dbp;
+  const open = () => dbp || (dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('puscart', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  }));
+  const tx = async (mode, fn) => {
+    const db = await open();
+    return new Promise((res, rej) => {
+      const t = db.transaction('kv', mode); const st = t.objectStore('kv');
+      const out = fn(st);
+      t.oncomplete = () => res(out instanceof IDBRequest ? out.result : undefined);
+      t.onerror = () => rej(t.error);
+    });
+  };
+  return {
+    get: k => tx('readonly', st => st.get(k)).catch(() => undefined),
+    set: (k, v) => tx('readwrite', st => { st.put(v, k); }).catch(() => { })
+  };
+})();
+
+/* ---------- state ---------- */
+const S = {
+  settings: null, products: [], sales: [], moves: [], soldBefore: {}, salesCutoff: '', sub: null, support: '', grace: 7,
+  ops: [], lastOk: 0, view: 'sell', online: navigator.onLine, syncing: false, log: [], pinSet: undefined,
+  cart: [], q: '', itemsQ: '', itemsF: 'all', salesP: 'today', repP: 'today'
+};
+const K = n => n + '_' + CODE;
+let deviceId = LS.get('device');
+if (!deviceId) { deviceId = 'd' + Math.random().toString(36).slice(2, 9); LS.set('device', deviceId); }
+
+/* ---------- language ---------- */
+let LANG = LS.get(K('lang'), null) || 'tl';
+const L = (tl, en) => LANG === 'tl' ? tl : en;
+const NAVL = { sell: ['Benta', 'Sell'], items: ['Paninda', 'Items'], sales: ['Listahan', 'Sales'], report: ['Ulat', 'Reports'], help: ['Tulong', 'Help'] };
+const METHODS = { cash: ['💵', 'Cash'], gcash: ['🔵', 'GCash'], maya: ['🟢', 'Maya'], bank: ['🏦', 'Bank'], card: ['💳', 'Card'] };
+const CURRENCIES = {
+  PHP: { f: '🇵🇭', loc: 'en-PH', sym: '₱', tl: 'Peso', en: 'Peso' },
+  USD: { f: '🇺🇸', loc: 'en-US', sym: '$', tl: 'Dollar', en: 'Dollar' },
+  EUR: { f: '🇪🇺', loc: 'en-IE', sym: '€', tl: 'Euro', en: 'Euro' }
+};
+
+/* ---------- helpers ---------- */
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = p => (p || '') + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const nowIso = () => new Date().toISOString();
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const today = () => ymd(new Date());
+const parseYmd = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+const cur = () => (S.settings && S.settings.currency) || 'PHP';
+const sym = () => CURRENCIES[cur()].sym;
+let _nf = {};
+function money(n) {
+  const c = cur();
+  if (!_nf[c]) { try { _nf[c] = new Intl.NumberFormat(CURRENCIES[c].loc, { style: 'currency', currency: c, minimumFractionDigits: 2, maximumFractionDigits: 2 }); } catch (e) { _nf[c] = { format: v => CURRENCIES[c].sym + Number(v).toFixed(2) }; } }
+  return _nf[c].format(Number(n) || 0);
+}
+const num = v => { const n = parseFloat(String(v).replace(/[^0-9.\-]/g, '')); return isFinite(n) ? Math.round(n * 100) / 100 : 0; };
+const r2 = n => Math.round(n * 100) / 100;
+const MONTHS = { tl: ['Ene', 'Peb', 'Mar', 'Abr', 'May', 'Hun', 'Hul', 'Ago', 'Set', 'Okt', 'Nob', 'Dis'], en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] };
+function prettyDate(s) {
+  if (s === today()) return L('Ngayon', 'Today');
+  if (s === addDays(today(), -1)) return L('Kahapon', 'Yesterday');
+  const d = parseYmd(s); return MONTHS[LANG][d.getMonth()] + ' ' + d.getDate() + (d.getFullYear() !== new Date().getFullYear() ? ', ' + d.getFullYear() : '');
+}
+const hhmm = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+function timeAgo(iso) {
+  const t = new Date(iso).getTime(); if (!t) return '';
+  const m = Math.round((Date.now() - t) / 60000);
+  if (m < 1) return L('ngayon lang', 'just now');
+  if (m < 60) return m + L(' min ang nakaraan', ' min ago');
+  const h = Math.round(m / 60); if (h < 24) return h + L(' oras ang nakaraan', ' hr ago');
+  return prettyDate(ymd(new Date(t))) + ' ' + hhmm(iso);
+}
+const myName = () => LS.get(K('name'), '') || '';
+const isOwnerDevice = () => !!LS.get(K('owner'), false);
+const live = arr => arr.filter(x => !x.deleted);
+const liveSales = () => S.sales.filter(s => !s.voided);
+const storeName = () => (S.settings && (S.settings.storeName || S.settings.businessName)) || 'Puscart';
+
+/* ---------- barcodes ---------- */
+// UPC-A (12 digits) and EAN-13 with a leading 0 are the same product
+const normCode = c => { c = String(c || '').replace(/\s/g, ''); return /^\d{12}$/.test(c) ? '0' + c : c; };
+const findByCode = c => { const n = normCode(c); return n ? live(S.products).find(p => p.barcode && normCode(p.barcode) === n) : null; };
+
+/* ---------- owner PIN ---------- */
+const pinKey = () => LS.get(K('pin'), '');
+const isOwner = () => !!pinKey();
+async function pinHash(pin) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('puscart:' + pin));
+  return Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
+// can this phone void this sale? ('' = yes)
+function voidLock(s) {
+  if (isOwner()) return '';
+  if (s.device !== deviceId) return L('🔒 Owner lang ang pwedeng mag-void ng benta ng iba.', "🔒 Only the owner can void someone else's sale.");
+  if (!(s.createdAt && ymd(new Date(s.createdAt)) === today())) return L('🔒 Pwede lang i-void sa parehong araw. Sabihan si Owner.', '🔒 Sales can only be voided on the same day. Tell the owner.');
+  return '';
+}
+const ALERT_ACTIONS = ['edit', 'delete', 'void', 'adj'];
+const staffChanges = () => (S.log || []).filter(r => r.role === 'staff' && ALERT_ACTIONS.includes(r.action));
+const unseenAlerts = () => { const seen = LS.get(K('seen'), ''); return staffChanges().filter(r => String(r.time) > seen); };
+
+/* =================================================================
+   STOCK — counted from movements, never typed over
+   stock = starting stock + deliveries/adjustments − sold
+   ================================================================= */
+let _stockCache = null;
+function stockMap() {
+  if (_stockCache) return _stockCache;
+  const m = {};
+  S.products.forEach(p => m[p.id] = (Number(p.startStock) || 0) - (Number(S.soldBefore[p.id]) || 0));
+  live(S.moves).forEach(v => { if (m[v.pid] !== undefined) m[v.pid] += Number(v.qty) || 0; });
+  liveSales().forEach(s => (s.items || []).forEach(it => { if (it.pid && m[it.pid] !== undefined) m[it.pid] -= Number(it.qty) || 0; }));
+  Object.keys(m).forEach(k => m[k] = Math.round(m[k] * 1000) / 1000);
+  return (_stockCache = m);
+}
+const stockOf = p => stockMap()[p.id] || 0;
+const lowDefault = () => { const v = S.settings && S.settings.lowDefault; return v === undefined || v === '' ? 5 : num(v); };
+const lowOf = p => (p.low === '' || p.low == null || isNaN(Number(p.low))) ? lowDefault() : Number(p.low);
+const stockState = p => { const s = stockOf(p); return s <= 0 ? 'out' : s <= lowOf(p) ? 'low' : 'ok'; };
+function stockBadge(p) {
+  const s = stockOf(p), st = stockState(p);
+  return '<span class="badge ' + (st === 'ok' ? '' : st) + '">' + (st === 'out' ? L('Ubos', 'Out') : s + ' ' + L('natitira', 'left')) + '</span>';
+}
+const lowList = () => live(S.products).filter(p => stockState(p) !== 'ok').sort((a, b) => stockOf(a) - stockOf(b));
+
+/* =================================================================
+   MUFFIN (drawn in code — loads instantly, works offline)
+   ================================================================= */
+const MUFFIN = {"hello": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 240\"><path d=\"M148 210 C186 206 192 170 172 160 C164 156 160 166 168 170 C178 176 170 196 146 196\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M174 166 l-8 6\" stroke=\"#d97a1e\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M62 160 C62 146 80 140 100 140 C120 140 138 146 138 160 L144 214 C144 224 128 228 100 228 C72 228 56 224 56 214 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M74 162 h52 l6 52 C132 220 120 224 100 224 C80 224 68 220 68 214 Z\" fill=\"#2bb5a0\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M86 188 h28 v14 c0 4 -4 6 -14 6 c-10 0 -14 -2 -14 -6 z\" fill=\"#1f8f7e\" stroke=\"#3a2f5b\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M74 162 C80 152 120 152 126 162\" fill=\"none\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><ellipse cx=\"80\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><ellipse cx=\"120\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M66 168 L56 200\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M66 168 L56 200\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"56\" cy=\"200\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M134 168 L164 128\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M134 168 L164 128\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"164\" cy=\"128\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M48 78 L52 26 L88 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M58 66 L60 40 L78 56 Z\" fill=\"#ffc2cf\"/><path d=\"M152 78 L148 26 L112 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M142 66 L140 40 L122 56 Z\" fill=\"#ffc2cf\"/><path d=\"M100 48 C150 48 168 74 168 104 C168 138 138 152 100 152 C62 152 32 138 32 104 C32 74 50 48 100 48 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\"/><path d=\"M100 92 C126 92 142 108 140 124 C138 142 120 148 100 148 C80 148 62 142 60 124 C58 108 74 92 100 92 Z\" fill=\"#fff3e3\"/><path d=\"M100 54 v14 M86 57 l3 11 M114 57 l-3 11\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M34 100 h12 M35 112 h10 M166 100 h-12 M165 112 h-10\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><ellipse cx=\"66\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"134\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"80\" cy=\"96\" rx=\"8.5\" ry=\"10.5\" fill=\"#3a2f5b\"/><circle cx=\"83.5\" cy=\"91.5\" r=\"3.2\" fill=\"#fff\"/><ellipse cx=\"120\" cy=\"96\" rx=\"8.5\" ry=\"10.5\" fill=\"#3a2f5b\"/><circle cx=\"123.5\" cy=\"91.5\" r=\"3.2\" fill=\"#fff\"/><path d=\"M94 106 h12 l-6 7 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M92 116 q8 14 16 0 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"3.5\" stroke-linejoin=\"round\"/><path d=\"M58 118 l-22 -4 M58 124 l-22 4 M142 118 l22 -4 M142 124 l22 4\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><g transform=\"translate(0,-6)\"><path d=\"M50 72 C70 58 130 58 150 72 L148 82 C128 70 72 70 52 82 Z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M64 74 C80 66 120 66 136 74 C132 84 68 84 64 74 Z\" fill=\"#e0526f\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"66\" r=\"7\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text x=\"100\" y=\"70\" font-family=\"Arial Rounded MT Bold, Arial, sans-serif\" font-size=\"9\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g></svg>", "scan": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 220 240\"><path d=\"M148 210 C186 206 192 170 172 160 C164 156 160 166 168 170 C178 176 170 196 146 196\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M174 166 l-8 6\" stroke=\"#d97a1e\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M62 160 C62 146 80 140 100 140 C120 140 138 146 138 160 L144 214 C144 224 128 228 100 228 C72 228 56 224 56 214 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M74 162 h52 l6 52 C132 220 120 224 100 224 C80 224 68 220 68 214 Z\" fill=\"#2bb5a0\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M86 188 h28 v14 c0 4 -4 6 -14 6 c-10 0 -14 -2 -14 -6 z\" fill=\"#1f8f7e\" stroke=\"#3a2f5b\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M74 162 C80 152 120 152 126 162\" fill=\"none\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><ellipse cx=\"80\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><ellipse cx=\"120\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M66 168 L56 200\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M66 168 L56 200\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"56\" cy=\"200\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M134 168 L168 176\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M134 168 L168 176\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"168\" cy=\"176\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M48 78 L52 26 L88 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M58 66 L60 40 L78 56 Z\" fill=\"#ffc2cf\"/><path d=\"M152 78 L148 26 L112 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M142 66 L140 40 L122 56 Z\" fill=\"#ffc2cf\"/><path d=\"M100 48 C150 48 168 74 168 104 C168 138 138 152 100 152 C62 152 32 138 32 104 C32 74 50 48 100 48 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\"/><path d=\"M100 92 C126 92 142 108 140 124 C138 142 120 148 100 148 C80 148 62 142 60 124 C58 108 74 92 100 92 Z\" fill=\"#fff3e3\"/><path d=\"M100 54 v14 M86 57 l3 11 M114 57 l-3 11\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M34 100 h12 M35 112 h10 M166 100 h-12 M165 112 h-10\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><ellipse cx=\"66\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"134\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"80\" cy=\"96\" rx=\"8.5\" ry=\"10.5\" fill=\"#3a2f5b\"/><circle cx=\"83.5\" cy=\"91.5\" r=\"3.2\" fill=\"#fff\"/><ellipse cx=\"120\" cy=\"96\" rx=\"8.5\" ry=\"10.5\" fill=\"#3a2f5b\"/><circle cx=\"123.5\" cy=\"91.5\" r=\"3.2\" fill=\"#fff\"/><path d=\"M94 106 h12 l-6 7 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M90 114 q5 6 10 0 q5 6 10 0\" stroke=\"#3a2f5b\" stroke-width=\"3.5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M58 118 l-22 -4 M58 124 l-22 4 M142 118 l22 -4 M142 124 l22 4\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><g transform=\"translate(0,-6)\"><path d=\"M50 72 C70 58 130 58 150 72 L148 82 C128 70 72 70 52 82 Z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M64 74 C80 66 120 66 136 74 C132 84 68 84 64 74 Z\" fill=\"#e0526f\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"66\" r=\"7\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text x=\"100\" y=\"70\" font-family=\"Arial Rounded MT Bold, Arial, sans-serif\" font-size=\"9\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><g transform=\"translate(162,146) rotate(-20)\"><rect x=\"0\" y=\"0\" width=\"24\" height=\"40\" rx=\"6\" fill=\"#3a2f5b\"/><rect x=\"4\" y=\"4\" width=\"16\" height=\"10\" rx=\"3\" fill=\"#2bb5a0\"/></g><path d=\"M182 146 L214 114 L224 126 Z\" fill=\"#ff4d4d\" opacity=\".35\"/><path d=\"M182 146 L219 120\" stroke=\"#ff4d4d\" stroke-width=\"3\" stroke-linecap=\"round\"/><g transform=\"translate(166,8)\"><rect width=\"34\" height=\"26\" rx=\"4\" fill=\"#fff\" stroke=\"#3a2f5b\" stroke-width=\"2.5\"/><rect x=\"4.0\" y=\"4\" width=\"2.4\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"7.2\" y=\"4\" width=\"1.6\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"10.4\" y=\"4\" width=\"1.6\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"13.600000000000001\" y=\"4\" width=\"2.4\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"16.8\" y=\"4\" width=\"1.6\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"20.0\" y=\"4\" width=\"1.6\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"23.200000000000003\" y=\"4\" width=\"2.4\" height=\"18\" fill=\"#3a2f5b\"/><rect x=\"26.400000000000002\" y=\"4\" width=\"1.6\" height=\"18\" fill=\"#3a2f5b\"/></g></svg>", "cheer": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-8 0 222 240\"><path d=\"M40 16 l3 -8 3 8 8 3 -8 3 -3 8 -3 -8 -8 -3z M164 10 l2 -6 2 6 6 2 -6 2 -2 6 -2 -6 -6 -2z\" fill=\"#ffd66b\"/><g transform=\"translate(22,40)\"><circle r=\"11\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text y=\"5\" font-family=\"Arial, sans-serif\" font-size=\"13\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><g transform=\"translate(182,34)\"><circle r=\"11\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text y=\"5\" font-family=\"Arial, sans-serif\" font-size=\"13\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><g transform=\"translate(14,92)\"><circle r=\"11\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text y=\"5\" font-family=\"Arial, sans-serif\" font-size=\"13\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><g transform=\"translate(192,96)\"><circle r=\"11\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text y=\"5\" font-family=\"Arial, sans-serif\" font-size=\"13\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><path d=\"M148 210 C186 206 192 170 172 160 C164 156 160 166 168 170 C178 176 170 196 146 196\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M174 166 l-8 6\" stroke=\"#d97a1e\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M62 160 C62 146 80 140 100 140 C120 140 138 146 138 160 L144 214 C144 224 128 228 100 228 C72 228 56 224 56 214 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M74 162 h52 l6 52 C132 220 120 224 100 224 C80 224 68 220 68 214 Z\" fill=\"#2bb5a0\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M86 188 h28 v14 c0 4 -4 6 -14 6 c-10 0 -14 -2 -14 -6 z\" fill=\"#1f8f7e\" stroke=\"#3a2f5b\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M74 162 C80 152 120 152 126 162\" fill=\"none\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><ellipse cx=\"80\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><ellipse cx=\"120\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M66 168 L36 128\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M66 168 L36 128\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"36\" cy=\"128\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M134 168 L164 128\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M134 168 L164 128\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"164\" cy=\"128\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M48 78 L52 26 L88 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M58 66 L60 40 L78 56 Z\" fill=\"#ffc2cf\"/><path d=\"M152 78 L148 26 L112 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M142 66 L140 40 L122 56 Z\" fill=\"#ffc2cf\"/><path d=\"M100 48 C150 48 168 74 168 104 C168 138 138 152 100 152 C62 152 32 138 32 104 C32 74 50 48 100 48 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\"/><path d=\"M100 92 C126 92 142 108 140 124 C138 142 120 148 100 148 C80 148 62 142 60 124 C58 108 74 92 100 92 Z\" fill=\"#fff3e3\"/><path d=\"M100 54 v14 M86 57 l3 11 M114 57 l-3 11\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M34 100 h12 M35 112 h10 M166 100 h-12 M165 112 h-10\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><ellipse cx=\"66\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"134\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><path d=\"M72 98 q8 -10 16 0 M112 98 q8 -10 16 0\" stroke=\"#3a2f5b\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M94 106 h12 l-6 7 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M92 116 q8 14 16 0 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"3.5\" stroke-linejoin=\"round\"/><path d=\"M58 118 l-22 -4 M58 124 l-22 4 M142 118 l22 -4 M142 124 l22 4\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><g transform=\"translate(0,-6)\"><path d=\"M50 72 C70 58 130 58 150 72 L148 82 C128 70 72 70 52 82 Z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M64 74 C80 66 120 66 136 74 C132 84 68 84 64 74 Z\" fill=\"#e0526f\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"66\" r=\"7\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text x=\"100\" y=\"70\" font-family=\"Arial Rounded MT Bold, Arial, sans-serif\" font-size=\"9\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g></svg>", "worried": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 240\"><path d=\"M148 210 C186 206 192 170 172 160 C164 156 160 166 168 170 C178 176 170 196 146 196\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M174 166 l-8 6\" stroke=\"#d97a1e\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M62 160 C62 146 80 140 100 140 C120 140 138 146 138 160 L144 214 C144 224 128 228 100 228 C72 228 56 224 56 214 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M74 162 h52 l6 52 C132 220 120 224 100 224 C80 224 68 220 68 214 Z\" fill=\"#2bb5a0\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M86 188 h28 v14 c0 4 -4 6 -14 6 c-10 0 -14 -2 -14 -6 z\" fill=\"#1f8f7e\" stroke=\"#3a2f5b\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M74 162 C80 152 120 152 126 162\" fill=\"none\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><ellipse cx=\"80\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><ellipse cx=\"120\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M66 168 L84 182\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M66 168 L84 182\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"84\" cy=\"182\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M134 168 L116 182\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M134 168 L116 182\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"116\" cy=\"182\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M48 78 L52 26 L88 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M58 66 L60 40 L78 56 Z\" fill=\"#ffc2cf\"/><path d=\"M152 78 L148 26 L112 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M142 66 L140 40 L122 56 Z\" fill=\"#ffc2cf\"/><path d=\"M100 48 C150 48 168 74 168 104 C168 138 138 152 100 152 C62 152 32 138 32 104 C32 74 50 48 100 48 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\"/><path d=\"M100 92 C126 92 142 108 140 124 C138 142 120 148 100 148 C80 148 62 142 60 124 C58 108 74 92 100 92 Z\" fill=\"#fff3e3\"/><path d=\"M100 54 v14 M86 57 l3 11 M114 57 l-3 11\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M34 100 h12 M35 112 h10 M166 100 h-12 M165 112 h-10\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><ellipse cx=\"66\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"134\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"80\" cy=\"98\" rx=\"8\" ry=\"10\" fill=\"#3a2f5b\"/><circle cx=\"83\" cy=\"94\" r=\"3\" fill=\"#fff\"/><ellipse cx=\"120\" cy=\"98\" rx=\"8\" ry=\"10\" fill=\"#3a2f5b\"/><circle cx=\"123\" cy=\"94\" r=\"3\" fill=\"#fff\"/><path d=\"M68 82 l18 4 M132 82 l-18 4\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M94 106 h12 l-6 7 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M92 120 q8 -7 16 0\" stroke=\"#3a2f5b\" stroke-width=\"3.5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M58 118 l-22 -4 M58 124 l-22 4 M142 118 l22 -4 M142 124 l22 4\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><g transform=\"translate(0,-6)\"><path d=\"M50 72 C70 58 130 58 150 72 L148 82 C128 70 72 70 52 82 Z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M64 74 C80 66 120 66 136 74 C132 84 68 84 64 74 Z\" fill=\"#e0526f\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"66\" r=\"7\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text x=\"100\" y=\"70\" font-family=\"Arial Rounded MT Bold, Arial, sans-serif\" font-size=\"9\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><path d=\"M160 60 q8 12 0 18 q-8 -6 0 -18z\" fill=\"#8fd3ff\" stroke=\"#3a2f5b\" stroke-width=\"2.5\"/><g transform=\"translate(150,170)\"><rect width=\"46\" height=\"40\" rx=\"4\" fill=\"#e8c27b\" stroke=\"#3a2f5b\" stroke-width=\"3.5\"/><path d=\"M0 12 h46\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text x=\"23\" y=\"34\" font-family=\"Arial, sans-serif\" font-size=\"15\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">3</text></g></svg>", "cart": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 270 240\"><path d=\"M148 210 C186 206 192 170 172 160 C164 156 160 166 168 170 C178 176 170 196 146 196\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M174 166 l-8 6\" stroke=\"#d97a1e\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M62 160 C62 146 80 140 100 140 C120 140 138 146 138 160 L144 214 C144 224 128 228 100 228 C72 228 56 224 56 214 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M74 162 h52 l6 52 C132 220 120 224 100 224 C80 224 68 220 68 214 Z\" fill=\"#2bb5a0\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M86 188 h28 v14 c0 4 -4 6 -14 6 c-10 0 -14 -2 -14 -6 z\" fill=\"#1f8f7e\" stroke=\"#3a2f5b\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M74 162 C80 152 120 152 126 162\" fill=\"none\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><ellipse cx=\"80\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><ellipse cx=\"120\" cy=\"228\" rx=\"16\" ry=\"9\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M66 168 L32 176\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M66 168 L32 176\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"176\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M134 168 L168 176\" stroke=\"#3a2f5b\" stroke-width=\"19\" stroke-linecap=\"round\"/><path d=\"M134 168 L168 176\" stroke=\"#f59a3c\" stroke-width=\"11\" stroke-linecap=\"round\"/><circle cx=\"168\" cy=\"176\" r=\"11\" fill=\"#fff3e3\" stroke=\"#3a2f5b\" stroke-width=\"4\"/><path d=\"M48 78 L52 26 L88 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M58 66 L60 40 L78 56 Z\" fill=\"#ffc2cf\"/><path d=\"M152 78 L148 26 L112 56 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\" stroke-linejoin=\"round\"/><path d=\"M142 66 L140 40 L122 56 Z\" fill=\"#ffc2cf\"/><path d=\"M100 48 C150 48 168 74 168 104 C168 138 138 152 100 152 C62 152 32 138 32 104 C32 74 50 48 100 48 Z\" fill=\"#f59a3c\" stroke=\"#3a2f5b\" stroke-width=\"5\"/><path d=\"M100 92 C126 92 142 108 140 124 C138 142 120 148 100 148 C80 148 62 142 60 124 C58 108 74 92 100 92 Z\" fill=\"#fff3e3\"/><path d=\"M100 54 v14 M86 57 l3 11 M114 57 l-3 11\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M34 100 h12 M35 112 h10 M166 100 h-12 M165 112 h-10\" stroke=\"#d97a1e\" stroke-width=\"5\" stroke-linecap=\"round\"/><ellipse cx=\"66\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"134\" cy=\"114\" rx=\"9\" ry=\"6\" fill=\"#ef6f8a\" opacity=\".45\"/><ellipse cx=\"80\" cy=\"96\" rx=\"8\" ry=\"10\" fill=\"#3a2f5b\"/><circle cx=\"83\" cy=\"92\" r=\"3\" fill=\"#fff\"/><path d=\"M112 98 q8 -10 16 0\" stroke=\"#3a2f5b\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M94 106 h12 l-6 7 z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M90 114 q5 6 10 0 q5 6 10 0\" stroke=\"#3a2f5b\" stroke-width=\"3.5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M58 118 l-22 -4 M58 124 l-22 4 M142 118 l22 -4 M142 124 l22 4\" stroke=\"#3a2f5b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><g transform=\"translate(0,-6)\"><path d=\"M50 72 C70 58 130 58 150 72 L148 82 C128 70 72 70 52 82 Z\" fill=\"#ef6f8a\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><path d=\"M64 74 C80 66 120 66 136 74 C132 84 68 84 64 74 Z\" fill=\"#e0526f\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><circle cx=\"100\" cy=\"66\" r=\"7\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3\"/><text x=\"100\" y=\"70\" font-family=\"Arial Rounded MT Bold, Arial, sans-serif\" font-size=\"9\" font-weight=\"900\" fill=\"#3a2f5b\" text-anchor=\"middle\">₱</text></g><g transform=\"translate(150,150)\"><path d=\"M0 0 h14 l10 46 h62 l12 -38 h-80\" fill=\"none\" stroke=\"#3a2f5b\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M24 8 h74 l-10 38 h-56 z\" fill=\"#ffc2cf\" stroke=\"#3a2f5b\" stroke-width=\"4\" stroke-linejoin=\"round\"/><rect x=\"34\" y=\"-14\" width=\"18\" height=\"24\" rx=\"4\" fill=\"#2bb5a0\" stroke=\"#3a2f5b\" stroke-width=\"3.5\"/><rect x=\"56\" y=\"-6\" width=\"22\" height=\"16\" rx=\"3\" fill=\"#ffd66b\" stroke=\"#3a2f5b\" stroke-width=\"3.5\"/><circle cx=\"36\" cy=\"60\" r=\"8\" fill=\"#3a2f5b\"/><circle cx=\"80\" cy=\"60\" r=\"8\" fill=\"#3a2f5b\"/><circle cx=\"36\" cy=\"60\" r=\"3\" fill=\"#fff\"/><circle cx=\"80\" cy=\"60\" r=\"3\" fill=\"#fff\"/></g></svg>"};
+const MOOD = { hello: 'hello', happy: 'hello', wave: 'hello', cheer: 'cheer', sad: 'worried', think: 'worried', worried: 'worried', scan: 'scan', cart: 'cart' };
+function mascot(mood, cls) { return (MUFFIN[MOOD[mood] || 'hello'] || '').replace('<svg ', '<svg class="mascot ' + (cls || '') + '" aria-hidden="true" '); }
+
+/* =================================================================
+   API (real Apps Script, or demo mode saved on this phone)
+   ================================================================= */
+async function api(action, payload, timeoutMs) {
+  const body = Object.assign({ action, code: CODE, device: deviceId }, payload || {});
+  if (DEMO) return mockApi(body);
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs || 25000);
+  try {
+    const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body), signal: ctrl.signal, redirect: 'follow' });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Server error');
+    return j;
+  } finally { clearTimeout(t); }
+}
+
+// ---- DEMO backend: try/show Puscart before deploying ----
+function mockApi(b) {
+  const key = 'mock_' + CODE;
+  const db = LS.get(key, { settings: null, products: [], sales: [], moves: [], log: [] });
+  const save = () => LS.set(key, db);
+  const trialEnds = new Date(); trialEnds.setDate(trialEnds.getDate() + 14);
+  const own = p => !!(p && db.pinHash && p === db.pinHash);
+  const payload = () => ({ ok: true, pinSet: !!db.pinHash, pinOk: own(b.pin || b.pinHash), sub: { state: 'trial', daysLeft: 14, until: ymd(trialEnds) }, support: 'Demo mode', grace: 7, settings: db.settings, products: db.products, sales: db.sales, moves: db.moves, soldBefore: {}, salesCutoff: '' });
+  const allowed = op => {
+    if (own(b.pin)) return true;
+    if (op.op === 'settings') return false;
+    if (op.table === 'products') return true;
+    const ex = db[op.table].find(x => x.id === op.rec.id); if (!ex) return true;
+    if (op.table === 'sales') return op.action === 'void' && ex.device === op.device && ymd(new Date(ex.createdAt)) === today();
+    return false;
+  };
+  return new Promise(res => setTimeout(() => {
+    if (b.action === 'init') return res(payload());
+    if (b.action === 'setup') {
+      if (!(db.settings && db.settings.setupDone)) {
+        db.settings = Object.assign({}, b.settings, { setupDone: true }); db.pinHash = b.pinHash || '';
+        db.log.unshift({ time: nowIso(), by: b.by, action: 'setup', summary: b.settings.storeName, role: 'owner' });
+        demoSeed(db, b.by); save();
+      }
+      return res(payload());
+    }
+    if (b.action === 'verifyPin') return res({ ok: true, valid: own(b.pinHash) });
+    if (b.action === 'setPin') { if (db.pinHash && !own(b.oldPinHash)) return res({ ok: false, error: 'PIN_EXISTS' }); db.pinHash = b.pinHash; save(); return res(payload()); }
+    if (b.action === 'sync') {
+      const rejected = [];
+      (b.ops || []).forEach(op => {
+        if (!allowed(op)) { rejected.push({ id: op.rec && op.rec.id, action: op.action }); return; }
+        if (op.op === 'settings') db.settings = Object.assign({}, db.settings, op.data);
+        else {
+          const arr = db[op.table]; const i = arr.findIndex(x => x.id === op.rec.id);
+          if (i >= 0) { if (!(op.rec.updatedAt < arr[i].updatedAt)) arr[i] = op.rec; } else arr.push(op.rec);
+        }
+        db.log.unshift({ time: op.at, by: op.by, action: op.action || op.op, table: op.table, summary: op.summary, role: own(b.pin) ? 'owner' : 'staff' });
+      });
+      db.log = db.log.slice(0, 300); save(); return res(Object.assign(payload(), { rejected }));
+    }
+    if (b.action === 'log') return res({ ok: true, log: db.log });
+    res({ ok: false, error: 'unknown' });
+  }, 120));
+}
+// sample paninda for the demo (barcodes are made up)
+function eanCheck(d12) { let s = 0; for (let i = 0; i < 12; i++) s += +d12[i] * (i % 2 ? 3 : 1); return d12 + ((10 - s % 10) % 10); }
+function demoSeed(db, by) {
+  const at = nowIso();
+  [['Coke Mismo 300ml', 20, 15, 24, 1], ['Lucky Me Pancit Canton', 18, 14, 30, 0], ['Bear Brand 33g', 15, 12, 20, 0], ['Piattos Cheese', 22, 17, 12, 0],
+  ['Kopiko Brown 3in1', 9, 7, 3, 0], ['Safeguard White', 38, 31, 6, 0], ['Yelo (ice)', 10, 0, 50, 1], ['Itlog', 9, 7.5, 60, 1]].forEach((x, i) => {
+    db.products.push({ id: uid('p'), barcode: x[0].startsWith('Yelo') || x[0] === 'Itlog' ? '' : eanCheck('480' + String(1000000000 + i * 7919).slice(1)), name: x[0], price: x[1], cost: x[2], startStock: x[3], low: '', quick: !!x[4], unit: 'pc', by, device: deviceId, createdAt: at, updatedAt: at, deleted: false });
+  });
+}
+
+/* =================================================================
+   SYNC ENGINE — everything saves on the phone first, then syncs
+   ================================================================= */
+async function loadCache() {
+  const d = await DB.get(K('data'));
+  if (d) Object.assign(S, { settings: d.settings, products: d.products || [], sales: d.sales || [], moves: d.moves || [], soldBefore: d.soldBefore || {}, salesCutoff: d.salesCutoff || '', sub: d.sub, support: d.support || '', grace: d.grace || 7, lastOk: d.lastOk || 0, pinSet: d.pinSet });
+  S.ops = (await DB.get(K('ops'))) || [];
+  S.log = (await DB.get(K('log'))) || [];
+  S.cart = LS.get(K('cart'), []) || [];
+  ensureLocalPending();
+  return !!d;
+}
+function saveCache() {
+  return DB.set(K('data'), { settings: S.settings, products: S.products, sales: S.sales, moves: S.moves, soldBefore: S.soldBefore, salesCutoff: S.salesCutoff, sub: S.sub, support: S.support, grace: S.grace, lastOk: S.lastOk, pinSet: S.pinSet });
+}
+function applyServer(j) {
+  if (j.settings !== undefined) S.settings = j.settings;
+  S.products = j.products || [];
+  S.sales = j.sales || [];
+  S.moves = j.moves || [];
+  S.soldBefore = j.soldBefore || {};
+  S.salesCutoff = j.salesCutoff || '';
+  S.sub = j.sub; S.support = j.support || S.support; S.grace = j.grace || 7;
+  S.lastOk = Date.now();
+  if (j.pinSet !== undefined) S.pinSet = j.pinSet;
+  if (pinKey() && j.pinOk === false && j.sub && j.sub.state !== 'invalid') { LS.del(K('pin')); setTimeout(() => toast(L('Napalitan ang Owner PIN. Ilagay ulit sa Settings.', 'The Owner PIN changed. Enter it again in Settings.'), 'think'), 800); }
+  ensureLocalPending();
+}
+function ensureLocalPending() { S.ops.forEach(applyLocal); _stockCache = null; }
+function applyLocal(op) {
+  _stockCache = null;
+  if (op.op === 'settings') { S.settings = Object.assign({}, S.settings, op.data); return; }
+  const arr = S[op.table]; if (!arr) return;
+  const i = arr.findIndex(x => x.id === op.rec.id);
+  if (i >= 0) { if (!(op.rec.updatedAt < arr[i].updatedAt)) arr[i] = Object.assign({}, arr[i], op.rec); }
+  else arr.push(Object.assign({}, op.rec));
+}
+async function queueOp(op, noFlush) {
+  op.uid = uid('o'); op.at = nowIso(); op.by = myName() || 'Owner'; op.device = deviceId;
+  S.ops.push(op); applyLocal(op);
+  await DB.set(K('ops'), S.ops); saveCache();
+  updateSyncBadge(); if (!noFlush) flush();
+}
+async function flush(force) {
+  if (S.syncing) { if (force) setTimeout(() => flush(true), 1500); return; }
+  if (!navigator.onLine && !DEMO) { updateSyncBadge(); return; }
+  S.syncing = true; updateSyncBadge();
+  try {
+    const sending = S.ops.slice();
+    const j = await api('sync', { pin: pinKey(), ops: sending });
+    const sent = new Set(sending.map(o => o.uid));
+    S.ops = S.ops.filter(o => !sent.has(o.uid));
+    await DB.set(K('ops'), S.ops);
+    applyServer(j); await saveCache();
+    if (j.rejected && j.rejected.length) toast(L('May ' + j.rejected.length + ' pagbabago na hindi pinayagan — Owner lang ang pwede.', j.rejected.length + ' change(s) not allowed — owner only.'), 'sad');
+    if (isOwner() && sending.length) loadLog();
+    gateCheck();
+    if (!document.querySelector('.sheet.show') && !tourActive && !document.querySelector('.screen') && !document.querySelector('.scanner') && !typingNow()) render();
+    if (S.ops.length) setTimeout(flush, 400);
+  } catch (e) {
+    console.warn('sync failed', e);
+  } finally {
+    S.syncing = false; updateSyncBadge();
+  }
+}
+const typingNow = () => { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && a.value; };
+function updateSyncBadge() {
+  const b = $('#syncBadge'); if (!b) return;
+  const pending = S.ops.length;
+  if (S.syncing) { b.className = 'sync wait'; b.textContent = '⟳ ' + L('Nagsi-sync…', 'Syncing…'); }
+  else if (!navigator.onLine && !DEMO) { b.className = 'sync off'; b.textContent = '📴 ' + (pending ? pending + ' ' + L('naka-save', 'saved') : 'Offline'); }
+  else if (pending) { b.className = 'sync wait'; b.textContent = '⏳ ' + pending; }
+  else { b.className = 'sync ok'; b.textContent = '✓ ' + L('Synced', 'Synced'); }
+}
+window.addEventListener('online', () => { updateSyncBadge(); flush(); toast(L('May internet na! Nagsi-sync…', 'Back online! Syncing…'), 'happy'); });
+window.addEventListener('offline', () => { updateSyncBadge(); toast(L('Offline — tuloy lang ang benta, naka-save sa phone', 'Offline — keep selling, saved on phone'), 'think'); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.settings) flush(); });
+setInterval(() => { if (S.settings && !document.hidden) flush(); }, 60000);
+async function loadLog() {
+  if (!navigator.onLine && !DEMO) return;
+  try { const j = await api('log', {}); S.log = j.log || []; DB.set(K('log'), S.log); updateBell(); if (S.view === 'log' || S.view === 'alerts') render(); } catch (e) { }
+}
+
+/* =================================================================
+   UI BASICS
+   ================================================================= */
+let toastT;
+function toast(msg, mood) {
+  const t = $('#toast');
+  t.innerHTML = '<div class="m">' + mascot(mood || 'cheer') + '</div><div>' + esc(msg) + '</div>';
+  t.classList.add('show'); clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 2400);
+}
+const PRAISE = () => [L('Good job, Bossing! 🎉', 'Good job, Boss! 🎉'), L('Meow! Benta na! 🐱', 'Meow! Sold! 🐱'), L('Ayos! Pindot. Benta. Meow!', 'Nice! Tap. Sell. Meow!'), L('Galing! Isa pa! 💪', 'Great! Next one! 💪')];
+const praise = () => { const p = PRAISE(); return p[Math.floor(Math.random() * p.length)]; };
+
+// short "beep" on scan (no sound files needed)
+let actx;
+function beep(ok) {
+  if (S.settings && S.settings.sound === false) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'square'; o.frequency.value = ok === false ? 260 : 1760;
+    g.gain.setValueAtTime(0.06, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + (ok === false ? 0.25 : 0.09));
+    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.26);
+  } catch (e) { }
+  try { navigator.vibrate && navigator.vibrate(ok === false ? [60, 40, 60] : 35); } catch (e) { }
+}
+
+function setNavLabels() {
+  $$('[data-l]').forEach(el => { const k = el.getAttribute('data-l'); el.textContent = NAVL[k][LANG === 'tl' ? 0 : 1]; });
+  $('#nav-report').classList.toggle('hidden', !isOwner());
+  $('#nav-help').classList.toggle('hidden', isOwner());
+}
+function go(v) {
+  S.view = v; closeSheet(true);
+  $$('.nav button[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  render(); window.scrollTo(0, 0);
+}
+function render() {
+  if (!S.settings) return;
+  if (S.view === 'report' && !isOwner()) S.view = 'sell';
+  $('#bizName').textContent = storeName();
+  setNavLabels(); updateSyncBadge(); updateBell();
+  const v = { sell: viewSell, items: viewItems, sales: viewSales, report: viewReport, settings: viewSettings, log: viewLog, alerts: viewAlerts, help: viewHelp }[S.view] || viewSell;
+  $('#view').innerHTML = '<div class="view">' + v() + '</div>';
+  $('#app').classList.toggle('selling', S.view === 'sell');
+  $('#payBar').classList.toggle('hidden', S.view !== 'sell');
+  bindView();
+  if (S.view === 'sell') { renderCart(); bindSell(); }
+  if (S.view === 'help') bindHelp();
+}
+function updateBell() {
+  const b = $('#btn-bell'); if (!b) return;
+  b.classList.toggle('hidden', !isOwner());
+  const n = isOwner() ? unseenAlerts().length : 0;
+  const c = $('#bellN'); c.textContent = n > 9 ? '9+' : n; c.classList.toggle('hidden', !n);
+}
+function bindView() {
+  $$('#view [data-act]').forEach(el => el.addEventListener('click', ev => {
+    const a = el.dataset.act, arg = el.dataset.arg;
+    ACTIONS[a] && ACTIONS[a](arg, el, ev);
+  }));
+  const s = $('#itemsSearch');
+  if (s) s.addEventListener('input', () => { S.itemsQ = s.value; const pos = s.selectionStart; render(); const n = $('#itemsSearch'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { } });
+}
+function greet() {
+  const h = new Date().getHours();
+  const n = myName() ? ', ' + esc(myName().split(' ')[0]) : '';
+  if (h < 12) return L('Magandang umaga', 'Good morning') + n + '! ☀️';
+  if (h < 18) return L('Magandang hapon', 'Good afternoon') + n + '! 🌤️';
+  return L('Magandang gabi', 'Good evening') + n + '! 🌙';
+}
+const pIcon = p => esc((p.name || '?').trim().charAt(0).toUpperCase());
+
+/* =================================================================
+   BENTA (sell)
+   ================================================================= */
+function topSellers(days, n) {
+  const from = addDays(today(), -days), c = {};
+  liveSales().forEach(s => { if (s.date >= from) (s.items || []).forEach(it => { if (it.pid) c[it.pid] = (c[it.pid] || 0) + (+it.qty || 0); }); });
+  return live(S.products).filter(p => c[p.id]).sort((a, b) => c[b.id] - c[a.id]).slice(0, n);
+}
+function viewSell() {
+  const sold = liveSales().filter(s => s.date === today());
+  const tot = sold.reduce((a, s) => a + (+s.total || 0), 0);
+  let quick = live(S.products).filter(p => p.quick);
+  if (!quick.length) quick = topSellers(30, 8);
+  const lows = lowList();
+  let h = '<div class="hello"><div class="m">' + mascot(S.cart.length ? 'scan' : 'hello', 'hop') + '</div><div class="bubble">' +
+    (S.cart.length ? L('I-scan pa, o pindutin ang <b>Bayad</b> kapag tapos na.', 'Keep scanning, or tap <b>Pay</b> when done.') : greet()) +
+    '<small>' + (sold.length ? L('Benta ngayon: ', 'Sales today: ') + '<b>' + money(tot) + '</b> · ' + sold.length + L(' benta', ' sales') : L('Pindot. Benta. Meow! 🐱', 'Tap. Sell. Meow! 🐱')) + '</small></div></div>';
+  if (lows.length && !S.cart.length) h += '<button class="alertcard" data-act="lowGo"><span style="font-size:24px">⚠️</span><span style="flex:1">' + lows.length + L(' paninda ang paubos o ubos na', ' item(s) running low or out') + '<div class="small muted">' + lows.slice(0, 3).map(p => esc(p.name)).join(', ') + '</div></span><span>›</span></button>';
+  h += '<div class="scanbar" id="scanBar"><label class="scanin"><span>🔎</span><input id="scanIn" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="' + L('I-scan o hanapin…', 'Scan or search…') + '" value="' + esc(S.q) + '"></label>' +
+    '<button class="cambtn" id="camBtn" aria-label="Scan">📷</button></div><div id="sugg"></div>';
+  h += '<div class="qgrid" id="quickGrid">' + quick.map(p => '<button class="qt" data-act="addP" data-arg="' + p.id + '"><span class="n">' + esc(p.name) + '</span><span class="p">' + money(p.price) + '</span>' + (stockState(p) === 'out' ? '<span class="badge out">' + L('Ubos', 'Out') + '</span>' : '') + '</button>').join('') +
+    '<button class="qt add" data-act="customItem"><span style="font-size:22px">＋</span><span class="n">' + L('Iba pa (presyo lang)', 'Other (price only)') + '</span></button></div>';
+  h += '<div class="card cart" id="cartBox"></div>';
+  return h;
+}
+function cartTotal() { return r2(S.cart.reduce((a, c) => a + c.price * c.qty, 0)); }
+function cartCount() { return S.cart.reduce((a, c) => a + c.qty, 0); }
+function saveCart() { LS.set(K('cart'), S.cart); }
+function renderCart(flashKey) {
+  const box = $('#cartBox');
+  if (box) {
+    box.innerHTML = !S.cart.length
+      ? '<div class="empty" style="padding:14px 6px"><div class="m" style="width:84px">' + mascot('cart') + '</div>' + L('Wala pang laman ang cart.<br>I-scan ang barcode o pindutin ang paninda sa taas.', 'The cart is empty.<br>Scan a barcode or tap an item above.') + '</div>'
+      : S.cart.map(c => '<div class="ci' + (c.key === flashKey ? ' flash' : '') + '"><div class="nm" data-cprice="' + c.key + '"><b>' + esc(c.name) + '</b><span>' + money(c.price) + (c.pid ? '' : ' · ' + L('iba pa', 'other')) + '</span></div>' +
+        '<div class="qty"><button data-cq="' + c.key + '" data-d="-1">−</button><span data-cqn="' + c.key + '">' + c.qty + '</span><button data-cq="' + c.key + '" data-d="1">＋</button></div>' +
+        '<div class="lt">' + money(c.price * c.qty) + '</div></div>').join('');
+    box.querySelectorAll('[data-cq]').forEach(b => b.onclick = () => changeQty(b.dataset.cq, +b.dataset.d));
+    box.querySelectorAll('[data-cqn]').forEach(b => b.onclick = () => promptSheet(L('Ilan?', 'How many?'), cartLine(b.dataset.cqn).qty, 'num').then(v => { if (v === null) return; const n = num(v); if (n <= 0) removeLine(b.dataset.cqn); else { cartLine(b.dataset.cqn).qty = n; saveCart(); renderCart(); } }));
+    box.querySelectorAll('[data-cprice]').forEach(b => b.onclick = () => lineMenu(b.dataset.cprice));
+  }
+  const pb = $('#payBar'); if (!pb) return;
+  const n = cartCount();
+  $('#pb-n').textContent = n ? n + (n === 1 ? L(' item', ' item') : L(' items', ' items')) : L('Cart', 'Cart');
+  $('#pb-total').textContent = money(cartTotal());
+  $('#pb-pay').textContent = L('Bayad →', 'Pay →');
+  pb.querySelector('.in').parentElement.classList.toggle('empty', !n);
+  $('#pb-clear').classList.toggle('hidden', !n);
+}
+const cartLine = k => S.cart.find(c => c.key === k);
+function changeQty(k, d) {
+  const c = cartLine(k); if (!c) return;
+  c.qty = r2(c.qty + d);
+  if (c.qty <= 0) return removeLine(k);
+  saveCart(); renderCart();
+}
+function removeLine(k) { S.cart = S.cart.filter(c => c.key !== k); saveCart(); renderCart(); }
+function lineMenu(k) {
+  const c = cartLine(k); if (!c) return;
+  const el = openSheet('<div class="sheet-head"><h2>' + esc(c.name) + '</h2><button class="x" data-x>×</button></div>' +
+    '<div class="field"><label>' + L('Presyo sa benta na ito', 'Price for this sale') + ' <small>' + L('(hindi babaguhin ang presyo ng paninda)', "(won't change the item's price)") + '</small></label><div class="amtwrap"><span>' + sym() + '</span><input id="lp" inputmode="decimal" value="' + c.price + '"></div></div>' +
+    '<div class="row2"><button class="btn danger" data-rm>🗑️ ' + L('Alisin', 'Remove') + '</button><button class="btn main" data-ok>' + L('I-save', 'Save') + '</button></div>');
+  el.querySelector('[data-x]').onclick = () => closeSheet();
+  el.querySelector('[data-rm]').onclick = () => { closeSheet(); removeLine(k); };
+  el.querySelector('[data-ok]').onclick = () => { const v = num(el.querySelector('#lp').value); if (v >= 0) c.price = v; saveCart(); closeSheet(); renderCart(); };
+}
+function addToCart(p, qty) {
+  qty = qty || 1;
+  let c = S.cart.find(x => x.pid === p.id);
+  if (c) c.qty = r2(c.qty + qty);
+  else { c = { key: uid('c'), pid: p.id, name: p.name, barcode: p.barcode || '', price: +p.price || 0, cost: +p.cost || 0, qty }; S.cart.push(c); }
+  saveCart();
+  const inCart = S.cart.filter(x => x.pid === p.id).reduce((a, x) => a + x.qty, 0);
+  if (stockOf(p) - inCart < 0) toast(L('Ayon sa bilang, ubos na ang ' + p.name + '. Tuloy pa rin — i-check ang stock mamaya.', 'By the count, ' + p.name + ' is out. Continuing — check the stock later.'), 'worried');
+  if (S.view === 'sell') renderCart(c.key);
+  return c;
+}
+function bindSell() {
+  const inp = $('#scanIn'), sug = $('#sugg');
+  const paint = () => {
+    const q = inp.value.trim().toLowerCase(); S.q = inp.value;
+    if (!q || /^\d{6,}$/.test(q)) { sug.innerHTML = ''; return; }
+    const hits = live(S.products).filter(p => (p.name || '').toLowerCase().includes(q) || String(p.barcode).includes(q)).slice(0, 6);
+    sug.innerHTML = hits.length ? '<div class="sugg">' + hits.map(p => '<button data-sp="' + p.id + '"><span>' + esc(p.name) + '</span>' + stockBadge(p) + '<span class="p">' + money(p.price) + '</span></button>').join('') + '</div>'
+      : '<div class="sugg"><button data-new="1">＋ ' + L('Bagong paninda: ', 'New item: ') + '<b>' + esc(inp.value.trim()) + '</b></button></div>';
+    sug.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { addToCart(S.products.find(p => p.id === b.dataset.sp)); beep(); inp.value = ''; S.q = ''; sug.innerHTML = ''; });
+    const nb = sug.querySelector('[data-new]'); if (nb) nb.onclick = () => { const v = inp.value.trim(); inp.value = ''; S.q = ''; sug.innerHTML = ''; quickAddProduct({ name: v }).then(p => { if (p) addToCart(p); }); };
+  };
+  inp.addEventListener('input', paint);
+  inp.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const v = inp.value.trim(); if (!v) return;
+    if (/^\d{6,}$/.test(v)) { inp.value = ''; S.q = ''; sug.innerHTML = ''; handleScan(v); }
+    else { const b = sug.querySelector('button'); if (b) b.click(); }
+  });
+  if (S.q) paint();
+  $('#camBtn').onclick = () => openScanner(code => handleScan(code), { continuous: true });
+}
+// a barcode arrived (camera, Bluetooth scanner, or typed)
+function handleScan(code) {
+  code = normCode(code);
+  if (S.view !== 'sell') go('sell');
+  const p = findByCode(code);
+  if (p) { addToCart(p); beep(); return p; }
+  beep(false);
+  scanPause = true;
+  quickAddProduct({ barcode: code }).then(np => { scanPause = false; if (np) { addToCart(np); beep(); } });
+  return null;
+}
+let scanPause = false;
+
+/* =================================================================
+   PANINDA (items)
+   ================================================================= */
+function viewItems() {
+  const all = live(S.products);
+  const lowN = all.filter(p => stockState(p) === 'low').length, outN = all.filter(p => stockState(p) === 'out').length;
+  const q = S.itemsQ.trim().toLowerCase();
+  let list = all.filter(p => S.itemsF === 'all' || (S.itemsF === 'low' ? stockState(p) === 'low' : S.itemsF === 'out' ? stockState(p) === 'out' : S.itemsF === 'quick' ? p.quick : !p.barcode));
+  if (q) list = list.filter(p => (p.name || '').toLowerCase().includes(q) || String(p.barcode).includes(q));
+  list.sort((a, b) => S.itemsF === 'low' || S.itemsF === 'out' ? stockOf(a) - stockOf(b) : (a.name || '').localeCompare(b.name || ''));
+  const chip = (k, t) => '<button class="chip ' + (S.itemsF === k ? 'on' : '') + '" data-act="itemsF" data-arg="' + k + '">' + t + '</button>';
+  let h = '<h2>📦 ' + L('Paninda', 'Items') + ' <span class="muted small">(' + all.length + ')</span></h2>' +
+    '<div class="actrow"><button class="btn pink" id="addItemBtn" data-act="newItem">＋ ' + L('Bagong paninda', 'New item') + '</button><button class="btn teal" id="deliveryBtn" data-act="delivery">📥 Delivery</button></div>' +
+    '<div class="inrow" style="margin-bottom:10px"><input class="search" style="margin:0" id="itemsSearch" placeholder="🔎 ' + L('Hanapin…', 'Search…') + '" value="' + esc(S.itemsQ) + '"><button class="sbtn" data-act="scanFind" aria-label="Scan">📷</button></div>' +
+    '<div class="chips">' + chip('all', L('Lahat', 'All')) + chip('low', '⚠️ ' + L('Paubos', 'Low') + ' ' + lowN) + chip('out', '⛔ ' + L('Ubos', 'Out') + ' ' + outN) + chip('quick', '⭐ ' + L('Mabilis na pindot', 'Quick buttons')) + chip('nocode', L('Walang barcode', 'No barcode')) + '</div>';
+  if (!all.length) return h + '<div class="card empty"><div class="m">' + mascot('cart') + '</div>' + L('Wala pang paninda. Pindutin ang <b>＋ Bagong paninda</b> at i-scan ang barcode!', 'No items yet. Tap <b>＋ New item</b> and scan the barcode!') + '</div>';
+  if (!list.length) return h + '<div class="card empty">' + L('Walang tugma.', 'Nothing matches.') + '</div>';
+  return h + '<div class="card" style="padding:4px 12px">' + list.slice(0, 400).map(p => '<button class="item" data-act="editItem" data-arg="' + p.id + '"><div class="ic">' + (p.quick ? '⭐' : pIcon(p)) + '</div><div class="mid"><div class="t1">' + esc(p.name) + '</div><div class="t2">' + money(p.price) + (p.barcode ? ' · ' + esc(p.barcode) : '') + '</div></div><div class="val">' + stockBadge(p) + '</div></button>').join('') + '</div>' +
+    (list.length > 400 ? '<div class="muted small b" style="text-align:center">' + L('Gamitin ang search para sa iba pa', 'Use search to find more') + '</div>' : '');
+}
+
+/* =================================================================
+   LISTAHAN (sales)
+   ================================================================= */
+function salesRange(p) {
+  const t = today();
+  if (p === 'today') return [t, t];
+  if (p === 'yday') { const y = addDays(t, -1); return [y, y]; }
+  if (p === 'week') return [addDays(t, -6), t];
+  if (p === 'month') return [t.slice(0, 8) + '01', t];
+  if (p === 'lmonth') { const d = parseYmd(t.slice(0, 8) + '01'); d.setMonth(d.getMonth() - 1); const s = ymd(d); const e = addDays(t.slice(0, 8) + '01', -1); return [s, e]; }
+  if (p === 'd30') return [addDays(t, -29), t];
+  return ['0000', '9999'];
+}
+const PERIODS = () => [['today', L('Ngayon', 'Today')], ['yday', L('Kahapon', 'Yesterday')], ['week', L('7 araw', '7 days')], ['month', L('Ngayong buwan', 'This month')], ['lmonth', L('Nakaraang buwan', 'Last month')]];
+function saleTitle(s) {
+  const it = s.items || [];
+  const names = it.slice(0, 2).map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name).join(', ');
+  return names + (it.length > 2 ? ' +' + (it.length - 2) : '');
+}
+function viewSales() {
+  const [from, to] = salesRange(S.salesP);
+  const list = S.sales.filter(s => s.date >= from && s.date <= to).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  const ok = list.filter(s => !s.voided), tot = ok.reduce((a, s) => a + (+s.total || 0), 0);
+  let h = '<h2>🧾 ' + L('Listahan ng benta', 'Sales list') + '</h2><div class="chips">' + PERIODS().map(p => '<button class="chip ' + (S.salesP === p[0] ? 'on' : '') + '" data-act="salesP" data-arg="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>';
+  h += '<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><div class="small b muted">' + ok.length + L(' benta', ' sales') + '</div><div style="font-size:24px;font-weight:900">' + money(tot) + '</div></div><div style="width:64px">' + mascot('cheer') + '</div></div>';
+  if (!list.length) return h + '<div class="card empty"><div class="m">' + mascot('cart') + '</div>' + L('Wala pang benta dito.', 'No sales here yet.') + '</div>';
+  let day = '';
+  h += '<div class="card" style="padding:4px 12px">';
+  list.forEach(s => {
+    if (s.date !== day) {
+      if (day) h += '</div><div class="card" style="padding:4px 12px">';
+      day = s.date; const dt = list.filter(x => x.date === day && !x.voided).reduce((a, x) => a + (+x.total || 0), 0);
+      h += '<div class="dayhead" style="margin-top:8px"><span>' + prettyDate(day) + '</span><span>' + money(dt) + '</span></div>';
+    }
+    h += '<button class="item' + (s.voided ? ' void' : '') + '" data-act="openSale" data-arg="' + s.id + '"><div class="ic">' + ((METHODS[s.method] || ['💵'])[0]) + '</div><div class="mid"><div class="t1">' + esc(saleTitle(s)) + '</div><div class="t2">' + hhmm(s.createdAt) + ' · ' + esc(s.by || '') + (s.voided ? ' · ❌ VOID' : '') + '</div></div><div class="val">' + money(s.total) + '</div></button>';
+  });
+  return h + '</div>';
+}
+
+/* =================================================================
+   ULAT (owner only)
+   ================================================================= */
+function reportData(from, to) {
+  const sales = liveSales().filter(s => s.date >= from && s.date <= to);
+  const R = { n: sales.length, total: 0, profit: 0, costKnown: 0, noCost: 0, byMethod: {}, byStaff: {}, byItem: {}, byDay: {}, voids: S.sales.filter(s => s.voided && s.date >= from && s.date <= to).length };
+  sales.forEach(s => {
+    const t = +s.total || 0; R.total += t;
+    R.byMethod[s.method || 'cash'] = (R.byMethod[s.method || 'cash'] || 0) + t;
+    R.byStaff[s.by || '?'] = (R.byStaff[s.by || '?'] || 0) + t;
+    R.byDay[s.date] = (R.byDay[s.date] || 0) + t;
+    (s.items || []).forEach(it => {
+      const k = it.pid || ('x:' + it.name), line = (+it.price || 0) * (+it.qty || 0);
+      const o = R.byItem[k] || (R.byItem[k] = { name: it.name, qty: 0, amt: 0 });
+      o.qty += +it.qty || 0; o.amt += line;
+      if (+it.cost > 0) { R.profit += line - it.cost * it.qty; R.costKnown += line; } else R.noCost += line;
+    });
+  });
+  return R;
+}
+function invValue() {
+  let cost = 0, retail = 0, noCost = 0;
+  live(S.products).forEach(p => { const s = Math.max(0, stockOf(p)); retail += s * (+p.price || 0); if (+p.cost > 0) cost += s * p.cost; else if (s > 0) noCost++; });
+  return { cost, retail, noCost };
+}
+function viewReport() {
+  const [from, to] = salesRange(S.repP);
+  const R = reportData(from, to), iv = invValue();
+  const avg = R.n ? R.total / R.n : 0;
+  const hb = (obj, label, color) => { const arr = Object.entries(obj).sort((a, b) => b[1] - a[1]); const mx = arr.length ? arr[0][1] : 1; return arr.map(([k, v]) => '<div class="hbar"><div class="h"><span>' + label(k) + '</span><span>' + money(v) + '</span></div><div class="track"><div class="fill" style="width:' + Math.max(2, v / mx * 100) + '%;background:' + (color || 'var(--rosas)') + '"></div></div></div>').join(''); };
+  let h = '<h2>📊 ' + L('Ulat', 'Reports') + '</h2><div class="chips">' + PERIODS().concat([['d30', L('30 araw', '30 days')]]).map(p => '<button class="chip ' + (S.repP === p[0] ? 'on' : '') + '" data-act="repP" data-arg="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>';
+  h += '<div class="grid"><div class="stat big"><div class="lbl">🛒 ' + L('Kabuuang benta', 'Total sales') + '</div><div class="amt" style="font-size:30px">' + money(R.total) + '</div><div class="sub">' + R.n + L(' benta · karaniwan ', ' sales · average ') + money(avg) + (R.voids ? ' · ' + R.voids + ' void' : '') + '</div></div>' +
+    '<div class="stat t"><div class="lbl">💚 ' + L('Tubo (tantiya)', 'Profit (est.)') + '</div><div class="amt">' + money(R.profit) + '</div><div class="sub">' + (R.noCost ? money(R.noCost) + L(' na benta ang walang puhunan', ' of sales have no cost set') : L('Benta bawas puhunan', 'Sales minus cost')) + '</div></div>' +
+    '<div class="stat g"><div class="lbl">📦 ' + L('Halaga ng stock', 'Stock value') + '</div><div class="amt">' + money(iv.cost || iv.retail) + '</div><div class="sub">' + (iv.cost ? L('sa puhunan · ', 'at cost · ') + money(iv.retail) + L(' sa presyo', ' at price') : L('sa presyo ng benta', 'at selling price')) + '</div></div></div>';
+  const days = Object.keys(R.byDay);
+  if (to > from) {
+    const list = []; for (let d = from; d <= to && list.length < 31; d = addDays(d, 1)) list.push(d);
+    const mx = Math.max(1, ...list.map(d => R.byDay[d] || 0));
+    h += '<div class="card"><div class="b">📈 ' + L('Benta bawat araw', 'Sales per day') + '</div><div class="bars">' + list.map(d => '<div class="bar"><i style="height:' + ((R.byDay[d] || 0) / mx * 100) + '%"></i></div>').join('') + '</div><div class="barlbl">' + list.map((d, i) => '<span>' + (list.length <= 8 || i % 5 === 0 ? +d.slice(8) : '') + '</span>').join('') + '</div></div>';
+  }
+  const items = Object.values(R.byItem);
+  if (items.length) {
+    const byQty = items.slice().sort((a, b) => b.qty - a.qty).slice(0, 8), byAmt = items.slice().sort((a, b) => b.amt - a.amt).slice(0, 8);
+    h += '<div class="card"><div class="b">🏆 ' + L('Pinakamabenta (dami)', 'Best sellers (qty)') + '</div><table class="tbl">' + byQty.map((x, i) => '<tr><td>' + (i + 1) + '. ' + esc(x.name) + '</td><td class="r">' + x.qty + '</td></tr>').join('') + '</table></div>' +
+      '<div class="card"><div class="b">💰 ' + L('Pinakamalaking kita (halaga)', 'Top earners (amount)') + '</div><table class="tbl">' + byAmt.map((x, i) => '<tr><td>' + (i + 1) + '. ' + esc(x.name) + '</td><td class="r">' + money(x.amt) + '</td></tr>').join('') + '</table></div>';
+  }
+  if (R.n) {
+    h += '<div class="card"><div class="b">💳 ' + L('Ayon sa bayad', 'By payment method') + '</div>' + hb(R.byMethod, k => (METHODS[k] || ['💵', k]).join(' '), 'var(--teal)') + '</div>' +
+      '<div class="card"><div class="b">🙋 ' + L('Ayon sa nagbenta', 'By staff') + '</div>' + hb(R.byStaff, k => esc(k), 'var(--tang)') + '</div>';
+  }
+  const lows = lowList();
+  h += '<div class="card"><div class="b">⚠️ ' + L('Paubos / ubos na', 'Low / out of stock') + ' (' + lows.length + ')</div>' + (lows.length ? '<table class="tbl">' + lows.slice(0, 15).map(p => '<tr><td>' + esc(p.name) + '</td><td class="r">' + stockBadge(p) + '</td></tr>').join('') + '</table>' : '<div class="muted b small" style="margin-top:6px">' + L('Kumpleto ang stock! 🎉', 'All stocked up! 🎉') + '</div>') + '</div>';
+  h += '<div class="card"><div class="b">🔗 Kwentoink</div><div class="infobar">' + (S.settings.kwLinked ? L('Naka-link! Bawat araw, ang kabuuang benta (ayon sa bayad) ay kusang pumapasok sa <b>Kita</b> ng Kwentoink. Ang delivery na may puhunan ay pumapasok sa <b>Gastos</b>.', 'Linked! Each day\'s sales total (per payment method) goes into Kwentoink <b>Money In</b> automatically. Deliveries with cost go to <b>Expenses</b>.') : L('Hindi pa naka-link. Kung gamit mo rin ang Kwentoink, sabihan ang nagbigay ng link para i-connect.', "Not linked yet. If you also use Kwentoink, ask whoever gave you the link to connect them.")) + '</div></div>';
+  h += '<div class="row2" style="margin-bottom:12px"><button class="btn soft" data-act="csvSales">⬇️ ' + L('Benta (Excel)', 'Sales (Excel)') + '</button><button class="btn soft" data-act="csvStock">⬇️ ' + L('Stock (Excel)', 'Stock (Excel)') + '</button></div>' +
+    '<div class="muted small b" style="text-align:center">' + L('Ang tubo ay tantiya: benta bawas puhunan ng bawat paninda. Ilagay ang puhunan sa Paninda para mas tama.', 'Profit is an estimate: sales minus each item\'s cost. Add costs in Items for better numbers.') + '</div>';
+  return h;
+}
+function downloadCsv(name, rows) {
+  const csv = '﻿' + rows.map(r => r.map(v => { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function csvSales() {
+  const [from, to] = salesRange(S.repP);
+  const rows = [['Date', 'Time', 'Sale ID', 'Item', 'Barcode', 'Qty', 'Price', 'Line total', 'Cost', 'Payment', 'By', 'Voided']];
+  S.sales.filter(s => s.date >= from && s.date <= to).sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt))).forEach(s => (s.items || []).forEach(it =>
+    rows.push([s.date, hhmm(s.createdAt), s.id, it.name, it.barcode || '', it.qty, it.price, r2(it.price * it.qty), it.cost || '', s.method, s.by, s.voided ? 'VOID' : ''])));
+  downloadCsv('Puscart-benta-' + from + '_' + to + '.csv', rows);
+}
+function csvStock() {
+  const rows = [['Item', 'Barcode', 'Price', 'Cost', 'Stock', 'Low alert at', 'Stock value (cost)', 'Stock value (price)']];
+  live(S.products).sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(p => { const s = stockOf(p); rows.push([p.name, p.barcode, p.price, p.cost || '', s, lowOf(p), p.cost ? r2(Math.max(0, s) * p.cost) : '', r2(Math.max(0, s) * p.price)]); });
+  downloadCsv('Puscart-stock-' + today() + '.csv', rows);
+}
+
+/* =================================================================
+   SHEETS (pop-up panels)
+   ================================================================= */
+let sheetEl, backEl, sheetOnClose;
+function openSheet(html, onClose) {
+  closeSheet(true);
+  backEl = document.createElement('div'); backEl.className = 'backdrop';
+  sheetEl = document.createElement('div'); sheetEl.className = 'sheet';
+  sheetEl.innerHTML = '<div class="grab"></div>' + html;
+  document.body.append(backEl, sheetEl);
+  backEl.addEventListener('click', () => closeSheet());
+  sheetOnClose = onClose;
+  requestAnimationFrame(() => { backEl.classList.add('show'); sheetEl.classList.add('show'); });
+  return sheetEl;
+}
+function closeSheet(instant) {
+  if (!sheetEl) return;
+  const s = sheetEl, b = backEl, cb = sheetOnClose; sheetEl = backEl = sheetOnClose = null;
+  if (instant) { s.remove(); b.remove(); } else { s.classList.remove('show'); b.classList.remove('show'); setTimeout(() => { s.remove(); b.remove(); }, 180); }
+  cb && cb();
+}
+function promptSheet(title, value, kind) {
+  return new Promise(res => {
+    let done = false;
+    const el = openSheet('<div class="sheet-head"><h2>' + esc(title) + '</h2><button class="x" data-x>×</button></div>' +
+      (kind === 'money' ? '<div class="amtwrap"><span>' + sym() + '</span><input id="pv" inputmode="decimal" value="' + esc(value) + '"></div>'
+        : '<input class="inp" id="pv" ' + (kind === 'num' ? 'inputmode="decimal" style="font-size:26px;text-align:center;margin-bottom:12px"' : 'style="margin-bottom:12px"') + ' value="' + esc(value) + '">') +
+      '<button class="btn main" data-ok>' + L('I-save', 'Save') + '</button>', () => { if (!done) res(null); });
+    const i = el.querySelector('#pv'); setTimeout(() => { i.focus(); i.select && i.select(); }, 200);
+    const ok = () => { done = true; const v = i.value; closeSheet(); res(v); };
+    el.querySelector('[data-x]').onclick = () => closeSheet();
+    el.querySelector('[data-ok]').onclick = ok;
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') ok(); });
+  });
+}
+function pickSheet(title, opts, sel) {
+  return new Promise(res => {
+    let done = false;
+    const el = openSheet('<div class="sheet-head"><h2>' + esc(title) + '</h2><button class="x" data-x>×</button></div><div class="opts">' +
+      opts.map(o => '<button class="opt ' + (o.v === sel ? 'sel' : '') + '" data-v="' + o.v + '">' + o.label + '</button>').join('') + '</div>', () => { if (!done) res(null); });
+    el.querySelector('[data-x]').onclick = () => closeSheet();
+    el.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { done = true; closeSheet(); res(b.dataset.v); });
+  });
+}
+function confirmSheet(title, msg, okText, danger) {
+  return new Promise(res => {
+    let done = false;
+    const el = openSheet('<div class="sheet-head"><h2>' + title + '</h2><button class="x" data-x>×</button></div><div class="infobar" style="font-size:15px">' + msg + '</div>' +
+      '<div class="row2"><button class="btn soft" data-no>' + L('Huwag', 'Cancel') + '</button><button class="btn ' + (danger ? 'pink' : 'main') + '" data-ok>' + okText + '</button></div>', () => { if (!done) res(false); });
+    el.querySelector('[data-x]').onclick = el.querySelector('[data-no]').onclick = () => closeSheet();
+    el.querySelector('[data-ok]').onclick = () => { done = true; closeSheet(); res(true); };
+  });
+}
+
+/* =================================================================
+   PANINDA FORM (new / edit item)
+   ================================================================= */
+// returns a Promise with the saved product (or null)
+function openItem(existing, preset) {
+  return new Promise(resolve => {
+    const isNew = !existing;
+    const p = existing ? Object.assign({}, existing) : Object.assign({ id: uid('p'), barcode: '', name: '', price: '', cost: '', startStock: '', low: '', quick: false, unit: 'pc' }, preset || {});
+    let saved = null;
+    const stockNow = isNew ? 0 : stockOf(existing);
+    const el = openSheet(
+      '<div class="sheet-head"><h2>' + (isNew ? '＋ ' + L('Bagong paninda', 'New item') : '✏️ ' + esc(p.name)) + '</h2><button class="x" data-x>×</button></div>' +
+      (isNew && p.barcode ? '<div class="infobar">🐱 ' + L('Bagong barcode! I-type lang ang pangalan at presyo.', 'New barcode! Just type the name and price.') + '</div>' : '') +
+      '<div class="field"><label>' + L('Barcode', 'Barcode') + ' <small>' + L('(opsyonal — i-scan o i-type)', '(optional — scan or type)') + '</small></label><div class="inrow"><input class="inp" id="f-code" inputmode="numeric" value="' + esc(p.barcode) + '" placeholder="480…"><button class="sbtn" id="f-scan" aria-label="Scan">📷</button></div></div>' +
+      '<div class="field"><label>' + L('Pangalan', 'Name') + '</label><input class="inp" id="f-name" value="' + esc(p.name) + '" placeholder="' + L('hal. Coke Mismo 300ml', 'e.g. Coke Mismo 300ml') + '"></div>' +
+      '<div class="row2"><div class="field"><label>' + L('Presyo (benta)', 'Selling price') + '</label><div class="amtwrap" style="margin:0;padding:6px 12px"><span style="font-size:20px">' + sym() + '</span><input id="f-price" inputmode="decimal" style="font-size:24px" value="' + esc(p.price) + '" placeholder="0.00"></div></div>' +
+      '<div class="field"><label>' + L('Puhunan', 'Cost') + ' <small>' + L('(opsyonal)', '(optional)') + '</small></label><div class="amtwrap" style="margin:0;padding:6px 12px"><span style="font-size:20px">' + sym() + '</span><input id="f-cost" inputmode="decimal" style="font-size:24px" value="' + esc(p.cost || '') + '" placeholder="—"></div></div></div>' +
+      '<div id="f-margin" class="small b muted" style="margin:-4px 4px 10px"></div>' +
+      (isNew ? '<div class="field"><label>' + L('Ilan ang stock ngayon?', 'How many in stock now?') + '</label><input class="inp" id="f-stock" inputmode="decimal" value="' + esc(p.startStock) + '" placeholder="0"></div>'
+        : '<div class="card" style="display:flex;align-items:center;gap:10px"><div style="flex:1"><div class="small b muted">' + L('Stock ngayon', 'In stock now') + '</div><div style="font-size:24px;font-weight:900">' + stockNow + '</div></div>' + stockBadge(existing) + '</div>' +
+        '<div class="row2" style="margin-bottom:12px"><button class="btn soft" style="font-size:14px;padding:12px 6px" id="f-in">📥 ' + L('Dagdag stock', 'Add stock') + '</button><button class="btn soft" style="font-size:14px;padding:12px 6px" id="f-adj">✏️ ' + L('Ayusin ang bilang', 'Fix the count') + '</button></div>') +
+      '<div class="field"><label>' + L('Abisuhan ako kapag', 'Warn me when') + ' <small>' + L('(natitira ay ito o mas mababa)', '(this many or fewer left)') + '</small></label><input class="inp" id="f-low" inputmode="numeric" value="' + esc(p.low) + '" placeholder="' + lowDefault() + '"></div>' +
+      '<div class="set" style="margin-bottom:8px"><div>⭐ ' + L('Mabilis na pindot sa Benta', 'Quick button on Sell') + '<div class="muted">' + L('Para sa walang barcode (yelo, itlog, tingi)', 'For things without a barcode (ice, eggs, loose items)') + '</div></div><button class="switch ' + (p.quick ? 'on' : '') + '" id="f-quick" aria-label="quick"></button></div>' +
+      '<button class="btn pink" id="f-save">' + L('I-save', 'Save') + '</button>' +
+      (isNew ? '' : '<button class="btn danger" id="f-del" style="margin-top:10px">🗑️ ' + L('Burahin ang paninda', 'Delete item') + '</button><h3>📜 ' + L('Galaw ng stock', 'Stock history') + '</h3><div class="card" style="padding:4px 12px">' + itemHistory(existing) + '</div>'),
+      () => resolve(saved));
+    const $f = s => el.querySelector(s);
+    $f('[data-x]').onclick = () => closeSheet();
+    const margin = () => { const pr = num($f('#f-price').value), c = num($f('#f-cost').value); $f('#f-margin').textContent = pr && c ? L('Tubo bawat isa: ', 'Profit each: ') + money(pr - c) + ' (' + Math.round((pr - c) / pr * 100) + '%)' : ''; };
+    $f('#f-price').oninput = $f('#f-cost').oninput = margin; margin();
+    $f('#f-quick').onclick = () => $f('#f-quick').classList.toggle('on');
+    $f('#f-scan').onclick = () => openScanner(code => { $f('#f-code').value = normCode(code); beep(); }, { continuous: false });
+    if (!isNew) {
+      $f('#f-in').onclick = () => { closeSheet(true); openDelivery([{ pid: existing.id, qty: 1, cost: '' }]); };
+      $f('#f-adj').onclick = () => { closeSheet(true); adjustStock(existing); };
+      $f('#f-del').onclick = async () => {
+        if (!await confirmSheet('🗑️ ' + esc(existing.name), L('Buburahin ang paninda sa listahan. Hindi mabubura ang mga lumang benta.', "The item will be removed from the list. Past sales stay."), L('Burahin', 'Delete'), true)) return;
+        queueOp({ op: 'upsert', table: 'products', action: 'delete', rec: Object.assign({}, existing, { deleted: true, updatedAt: nowIso() }), summary: '🗑️ ' + existing.name });
+        closeSheet(true); toast(L('Nabura na', 'Deleted'), 'happy'); render();
+      };
+    }
+    setTimeout(() => (isNew && p.barcode ? $f('#f-name') : isNew ? $f('#f-code') : null)?.focus(), 250);
+    $f('#f-save').onclick = () => {
+      const code = normCode($f('#f-code').value.trim()), name = $f('#f-name').value.trim(), price = num($f('#f-price').value);
+      const bad = (s, m) => { const i = $f(s); (i.closest('.amtwrap') || i).style.borderColor = 'var(--red)'; toast(m, 'sad'); };
+      if (!name) return bad('#f-name', L('Ilagay ang pangalan', 'Enter a name'));
+      if (!(price > 0) && String($f('#f-price').value).trim() !== '0') return bad('#f-price', L('Ilagay ang presyo', 'Enter the price'));
+      const dup = code && live(S.products).find(x => x.id !== p.id && x.barcode && normCode(x.barcode) === code);
+      if (dup) return bad('#f-code', L('Gamit na ang barcode na ito ng: ', 'This barcode is already used by: ') + dup.name);
+      const at = nowIso();
+      const lowV = $f('#f-low').value.trim();
+      const costV = $f('#f-cost').value.trim();
+      const rec = Object.assign({}, p, { barcode: code, name, price, cost: costV === '' ? 0 : num(costV), low: lowV === '' ? '' : num(lowV), quick: $f('#f-quick').classList.contains('on'), updatedAt: at });
+      if (isNew) Object.assign(rec, { startStock: num($f('#f-stock').value), by: myName(), device: deviceId, createdAt: at, deleted: false });
+      let summary = (isNew ? '＋ ' : '✏️ ') + name + ' · ' + money(price);
+      if (!isNew && +existing.price !== price) summary = '✏️ ' + name + ': ' + L('presyo ', 'price ') + money(existing.price) + ' → ' + money(price);
+      queueOp({ op: 'upsert', table: 'products', action: isNew ? 'add' : 'edit', rec, summary });
+      saved = rec; closeSheet();
+      if (!isOwner() && !isNew) toast(L('Na-save! Aabisuhan si Owner sa pagbabago.', 'Saved! The owner will be notified.'), 'happy');
+      else toast(isNew ? L('Bagong paninda! Meow! 🐱', 'New item added! Meow! 🐱') : L('Na-save!', 'Saved!'), 'cheer');
+      if (S.view === 'items') render();
+    };
+  });
+}
+const quickAddProduct = preset => openItem(null, preset);
+function itemHistory(p) {
+  const rows = [];
+  live(S.moves).filter(m => m.pid === p.id).forEach(m => rows.push({ t: m.createdAt, d: m.date, q: +m.qty, txt: (m.kind === 'in' ? '📥 ' + L('Dumating', 'Arrived') : '✏️ ' + L('Inayos', 'Adjusted')) + (m.note ? ' · ' + m.note : ''), by: m.by, mid: m.id }));
+  const sold = {};
+  liveSales().forEach(s => (s.items || []).forEach(it => { if (it.pid === p.id) sold[s.date] = (sold[s.date] || 0) + (+it.qty || 0); }));
+  Object.keys(sold).forEach(d => rows.push({ t: d + 'T23:59', d, q: -sold[d], txt: '🛒 ' + L('Nabenta', 'Sold') }));
+  rows.push({ t: p.createdAt || '', d: (p.createdAt || '').slice(0, 10), q: +p.startStock || 0, txt: '🏁 ' + L('Simulang bilang', 'Starting count'), by: p.by });
+  rows.sort((a, b) => String(b.t).localeCompare(String(a.t)));
+  return rows.slice(0, 40).map(r => '<div class="item"><div class="mid"><div class="t1" style="font-size:14px">' + esc(r.txt) + '</div><div class="t2">' + (r.d ? prettyDate(r.d) : '') + (r.by ? ' · ' + esc(r.by) : '') + '</div></div><div class="val" style="color:' + (r.q < 0 ? 'var(--red)' : 'var(--tealD)') + '">' + (r.q > 0 ? '+' : '') + r.q + '</div>' +
+    (r.mid && isOwner() ? '<button class="x" style="width:32px;height:32px;font-size:14px" onclick="delMove(\'' + r.mid + '\')">🗑️</button>' : '') + '</div>').join('');
+}
+async function delMove(id) {
+  const m = S.moves.find(x => x.id === id); if (!m) return;
+  if (!await confirmSheet(L('Burahin ang galaw na ito?', 'Delete this stock record?'), esc((m.kind === 'in' ? '📥 ' : '✏️ ') + (m.qty > 0 ? '+' : '') + m.qty + (m.note ? ' · ' + m.note : '')), L('Burahin', 'Delete'), true)) return;
+  const p = S.products.find(x => x.id === m.pid);
+  queueOp({ op: 'upsert', table: 'moves', action: 'delete', rec: Object.assign({}, m, { deleted: true, updatedAt: nowIso() }), summary: '🗑️ ' + (p ? p.name : '') + ' ' + (m.qty > 0 ? '+' : '') + m.qty });
+  toast(L('Nabura', 'Deleted'), 'happy'); if (p) openItem(S.products.find(x => x.id === p.id)); render();
+}
+
+/* ---------- fix the count (damaged, expired, recount) ---------- */
+function adjustStock(p) {
+  const now = stockOf(p);
+  const REASONS = [['count', '🔢', L('Binilang ulit', 'Recounted')], ['damaged', '💥', L('Nasira', 'Damaged')], ['expired', '📅', L('Expired', 'Expired')], ['lost', '❓', L('Nawala', 'Missing')], ['own', '🏠', L('Kinuha ng may-ari', 'Taken by owner')]];
+  let mode = 'count';
+  const el = openSheet('<div class="sheet-head"><h2>✏️ ' + esc(p.name) + '</h2><button class="x" data-x>×</button></div>' +
+    '<div class="infobar">' + L('Stock ayon sa Puscart: ', 'Stock according to Puscart: ') + '<b>' + now + '</b></div>' +
+    '<div class="cats" style="margin-bottom:12px">' + REASONS.map(r => '<button class="cat ' + (r[0] === mode ? 'sel' : '') + '" data-r="' + r[0] + '">' + r[1] + ' ' + r[2] + '</button>').join('') + '</div>' +
+    '<div class="field"><label id="a-lbl"></label><input class="inp" id="a-v" inputmode="decimal" style="font-size:24px;text-align:center"></div><div id="a-res" class="small b muted" style="margin:-4px 4px 12px"></div>' +
+    (isOwner() ? '' : '<div class="infobar">🔔 ' + L('Aabisuhan si Owner sa pagbabagong ito.', 'The owner will be notified of this change.') + '</div>') +
+    '<button class="btn pink" id="a-ok">' + L('I-save', 'Save') + '</button>');
+  const $a = s => el.querySelector(s);
+  const paint = () => {
+    el.querySelectorAll('[data-r]').forEach(b => b.classList.toggle('sel', b.dataset.r === mode));
+    $a('#a-lbl').textContent = mode === 'count' ? L('Ilan talaga ang nasa tindahan?', 'How many are really in the store?') : L('Ilan ang aalisin?', 'How many to remove?');
+    calc();
+  };
+  const diff = () => { const v = $a('#a-v').value.trim(); if (v === '') return null; const n = num(v); return mode === 'count' ? r2(n - now) : -Math.abs(n); };
+  const calc = () => { const d = diff(); $a('#a-res').textContent = d === null ? '' : L('Pagbabago: ', 'Change: ') + (d > 0 ? '+' : '') + d + ' → ' + L('bagong stock: ', 'new stock: ') + r2(now + d); };
+  $a('#a-v').oninput = calc;
+  el.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { mode = b.dataset.r; paint(); });
+  $a('[data-x]').onclick = () => closeSheet();
+  $a('#a-ok').onclick = () => {
+    const d = diff(); if (d === null || d === 0) { closeSheet(); return; }
+    const r = REASONS.find(x => x[0] === mode), at = nowIso();
+    const rec = { id: uid('m'), date: today(), pid: p.id, qty: d, kind: 'adj', cost: 0, note: r[2], batch: '', by: myName(), device: deviceId, createdAt: at, updatedAt: at, deleted: false };
+    queueOp({ op: 'upsert', table: 'moves', action: 'adj', rec, summary: '✏️ ' + p.name + ': ' + (d > 0 ? '+' : '') + d + ' (' + r[2] + ')' });
+    closeSheet(); toast(L('Naayos ang bilang!', 'Count fixed!'), 'cheer'); render();
+  };
+  paint(); setTimeout(() => $a('#a-v').focus(), 250);
+}
+
+/* ---------- stock arrived (delivery) ---------- */
+function openDelivery(startLines) {
+  const lines = (startLines || []).slice();
+  let note = '', updCost = true;
+  const el = openSheet('<div class="sheet-head"><h2>📥 ' + L('Dumating na stock', 'Stock arrived') + '</h2><button class="x" data-x>×</button></div>' +
+    '<div class="infobar">' + L('I-scan o hanapin ang bawat paninda na dumating, tapos ilagay kung ilan.', 'Scan or search each item that arrived, then enter how many.') + '</div>' +
+    '<div class="inrow" style="margin-bottom:6px"><input class="inp" id="d-q" placeholder="🔎 ' + L('Pangalan o barcode', 'Name or barcode') + '" autocomplete="off"><button class="sbtn" id="d-scan">📷</button></div><div id="d-sugg"></div>' +
+    '<div id="d-lines"></div>' +
+    '<div class="field"><label>' + L('Supplier / tala', 'Supplier / note') + ' <small>' + L('(opsyonal)', '(optional)') + '</small></label><input class="inp" id="d-note" placeholder="' + L('hal. Puregold, Ahente ng Coke', 'e.g. Puregold, Coke agent') + '"></div>' +
+    '<div class="set" style="margin-bottom:8px"><div>' + L('I-update ang puhunan ng paninda', "Update the item's cost") + '<div class="muted">' + L('Gamit ang binayad mo ÷ dami', 'Using what you paid ÷ quantity') + '</div></div><button class="switch on" id="d-upd"></button></div>' +
+    '<div id="d-tot" class="change" style="background:var(--teal2);color:var(--tealD)"></div>' +
+    '<button class="btn teal" id="d-ok">✅ ' + L('I-save ang dumating', 'Save delivery') + '</button>');
+  const $d = s => el.querySelector(s);
+  const addLine = p => { const ex = lines.find(l => l.pid === p.id); if (ex) ex.qty = r2(ex.qty + 1); else lines.unshift({ pid: p.id, qty: 1, cost: '' }); paint(); };
+  function paint() {
+    $d('#d-lines').innerHTML = !lines.length ? '<div class="card empty" style="padding:12px">' + L('Wala pang nailagay.', 'Nothing added yet.') + '</div>'
+      : '<div class="card" style="padding:4px 12px">' + lines.map((l, i) => { const p = S.products.find(x => x.id === l.pid) || { name: '?' }; return '<div class="ci" style="display:block;padding:10px 0;border-bottom:1px dashed var(--line)"><div style="display:flex;justify-content:space-between;gap:8px;font-weight:900"><span>' + esc(p.name) + '</span><button data-rm="' + i + '" style="color:var(--muted)">✕</button></div>' +
+        '<div class="row2" style="margin-top:6px"><div><div class="small b muted">' + L('Ilan', 'Qty') + '</div><input class="inp" data-q="' + i + '" inputmode="decimal" value="' + l.qty + '" style="font-size:20px;text-align:center"></div><div><div class="small b muted">' + L('Binayad (kabuuan)', 'Paid (total)') + '</div><input class="inp" data-c="' + i + '" inputmode="decimal" value="' + l.cost + '" placeholder="' + sym() + ' —" style="font-size:20px;text-align:center"></div></div></div>'; }).join('') + '</div>';
+    el.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { lines.splice(+b.dataset.rm, 1); paint(); });
+    el.querySelectorAll('[data-q]').forEach(i => i.oninput = () => { lines[+i.dataset.q].qty = num(i.value); tot(); });
+    el.querySelectorAll('[data-c]').forEach(i => i.oninput = () => { lines[+i.dataset.c].cost = i.value; tot(); });
+    tot();
+  }
+  function tot() {
+    const q = lines.reduce((a, l) => a + (+l.qty || 0), 0), c = lines.reduce((a, l) => a + num(l.cost), 0);
+    $d('#d-tot').innerHTML = '<span>' + lines.length + L(' paninda · ', ' items · ') + q + L(' piraso', ' pcs') + '</span><b style="font-size:20px">' + (c ? money(c) : '') + '</b>';
+  }
+  const q = $d('#d-q'), sug = $d('#d-sugg');
+  const handle = code => {
+    const p = findByCode(code);
+    if (p) { addLine(p); beep(); return; }
+    beep(false);
+    scanPause = true;
+    const keep = { lines: lines.slice(), note: $d('#d-note').value };
+    openItem(null, { barcode: normCode(code) }).then(np => { scanPause = false; const ls = keep.lines; if (np) ls.unshift({ pid: np.id, qty: 1, cost: '' }); openDelivery(ls); setTimeout(() => { const n = $('#d-note'); if (n) n.value = keep.note; }, 50); });
+  };
+  q.oninput = () => {
+    const v = q.value.trim().toLowerCase();
+    if (!v || /^\d{6,}$/.test(v)) { sug.innerHTML = ''; return; }
+    const hits = live(S.products).filter(p => (p.name || '').toLowerCase().includes(v)).slice(0, 5);
+    sug.innerHTML = '<div class="sugg">' + hits.map(p => '<button data-sp="' + p.id + '"><span>' + esc(p.name) + '</span>' + stockBadge(p) + '</button>').join('') + '<button data-new="1">＋ ' + L('Bagong paninda', 'New item') + '</button></div>';
+    sug.querySelectorAll('[data-sp]').forEach(b => b.onclick = () => { addLine(S.products.find(p => p.id === b.dataset.sp)); q.value = ''; sug.innerHTML = ''; });
+    sug.querySelector('[data-new]').onclick = () => { const name = q.value.trim(); const keep = lines.slice(); openItem(null, { name }).then(np => { if (np) keep.unshift({ pid: np.id, qty: 1, cost: '' }); openDelivery(keep); }); };
+  };
+  q.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const v = q.value.trim(); if (/^\d{6,}$/.test(v)) { q.value = ''; handle(v); } } });
+  $d('#d-scan').onclick = () => openScanner(code => handle(code), { continuous: true, label: L('I-scan ang dumating', 'Scan arrivals') });
+  $d('#d-upd').onclick = () => { updCost = !updCost; $d('#d-upd').classList.toggle('on', updCost); };
+  $d('[data-x]').onclick = () => closeSheet();
+  $d('#d-ok').onclick = () => {
+    const good = lines.filter(l => +l.qty > 0);
+    if (!good.length) { toast(L('Maglagay muna ng paninda', 'Add an item first'), 'think'); return; }
+    note = $d('#d-note').value.trim();
+    const batch = uid('b'), at = nowIso();
+    good.forEach(l => {
+      const p = S.products.find(x => x.id === l.pid); if (!p) return;
+      const cost = num(l.cost);
+      queueOp({ op: 'upsert', table: 'moves', action: 'in', rec: { id: uid('m'), date: today(), pid: p.id, qty: +l.qty, kind: 'in', cost, note, batch, by: myName(), device: deviceId, createdAt: at, updatedAt: at, deleted: false }, summary: '📥 ' + p.name + ' +' + l.qty + (cost ? ' · ' + money(cost) : '') }, true);
+      const unit = cost && +l.qty ? r2(cost / l.qty) : 0;
+      if (updCost && unit && unit !== +p.cost) queueOp({ op: 'upsert', table: 'products', action: 'edit', rec: Object.assign({}, p, { cost: unit, updatedAt: at }), summary: '✏️ ' + p.name + ': ' + L('puhunan ', 'cost ') + money(unit) }, true);
+    });
+    flush();
+    closeSheet(); toast(L('Naidagdag ang stock! 📦', 'Stock added! 📦'), 'cheer'); render();
+  };
+  paint();
+}
+
+/* =================================================================
+   BAYAD (pay) + RESIBO
+   ================================================================= */
+function cashSuggestions(t) {
+  const out = [];
+  [20, 50, 100, 200, 500, 1000].forEach(b => { const v = Math.ceil(t / b) * b; if (v > t && !out.includes(v)) out.push(v); });
+  return out.sort((a, b) => a - b).slice(0, 5);
+}
+function openPay() {
+  if (!S.cart.length) { toast(L('Wala pang laman ang cart', 'The cart is empty'), 'think'); return; }
+  const total = cartTotal();
+  const methods = (S.settings.methods && S.settings.methods.length) ? S.settings.methods : ['cash'];
+  let method = methods.includes('cash') ? 'cash' : methods[0];
+  const el = openSheet('<div class="sheet-head"><h2>💸 ' + L('Bayad', 'Payment') + '</h2><button class="x" data-x>×</button></div>' +
+    '<div class="paytot"><small>' + cartCount() + L(' item · Kabuuan', ' items · Total') + '</small><b>' + money(total) + '</b></div>' +
+    (methods.length > 1 ? '<div class="cats" style="margin-bottom:12px" id="p-m">' + methods.map(m => '<button class="cat" data-m="' + m + '">' + METHODS[m][0] + ' ' + METHODS[m][1] + '</button>').join('') + '</div>' : '') +
+    '<div id="p-cash"><div class="field"><label>' + L('Natanggap na pera', 'Cash received') + '</label><div class="amtwrap"><span>' + sym() + '</span><input id="p-amt" inputmode="decimal" placeholder="' + total.toFixed(2) + '"></div></div>' +
+    '<div class="qbtns"><button class="qbtn exact" data-a="' + total + '">' + L('Sakto', 'Exact') + '</button>' + cashSuggestions(total).map(v => '<button class="qbtn" data-a="' + v + '">' + money(v).replace(/\.00$/, '') + '</button>').join('') + '</div>' +
+    '<div class="change" id="p-chg"></div></div>' +
+    '<div id="p-ref" class="field hidden"><label>' + L('Reference no.', 'Reference no.') + ' <small>' + L('(opsyonal)', '(optional)') + '</small></label><input class="inp" id="p-refv" placeholder="GCash / Maya ref"></div>' +
+    '<button class="btn teal" id="p-ok" style="font-size:19px;padding:17px">✅ ' + L('Tapos na ang benta', 'Complete sale') + '</button>');
+  const $p = s => el.querySelector(s);
+  const amt = $p('#p-amt');
+  const paint = () => {
+    el.querySelectorAll('[data-m]').forEach(b => b.classList.toggle('sel', b.dataset.m === method));
+    $p('#p-cash').classList.toggle('hidden', method !== 'cash');
+    $p('#p-ref').classList.toggle('hidden', method === 'cash');
+    const got = amt.value.trim() === '' ? total : num(amt.value), ch = r2(got - total);
+    const c = $p('#p-chg');
+    c.className = 'change' + (ch < 0 ? ' short' : '');
+    c.innerHTML = ch < 0 ? '<span>' + L('Kulang pa', 'Still short') + '</span><b>' + money(-ch) + '</b>' : '<span>' + L('Sukli', 'Change') + '</span><b>' + money(ch) + '</b>';
+  };
+  el.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { method = b.dataset.m; paint(); });
+  el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { amt.value = (+b.dataset.a).toFixed(2); paint(); });
+  amt.oninput = paint;
+  amt.addEventListener('keydown', e => { if (e.key === 'Enter') $p('#p-ok').click(); });
+  $p('[data-x]').onclick = () => closeSheet();
+  $p('#p-ok').onclick = () => {
+    const got = method === 'cash' ? (amt.value.trim() === '' ? total : num(amt.value)) : total;
+    if (method === 'cash' && got < total) { toast(L('Kulang pa ang bayad', 'Payment is short'), 'worried'); amt.focus(); return; }
+    completeSale(method, got, method === 'cash' ? '' : $p('#p-refv').value.trim());
+  };
+  paint();
+}
+function completeSale(method, paid, note) {
+  const total = cartTotal(), at = nowIso();
+  const items = S.cart.map(c => ({ pid: c.pid, name: c.name, barcode: c.barcode, qty: c.qty, price: c.price, cost: c.cost || 0 }));
+  const before = {}; items.forEach(it => { if (it.pid) { const p = S.products.find(x => x.id === it.pid); if (p) before[p.id] = stockState(p); } });
+  const rec = { id: uid('s'), date: today(), items, total, paid: r2(paid), change: r2(paid - total), method, note: note || '', by: myName(), device: deviceId, createdAt: at, updatedAt: at, voided: false, voidBy: '' };
+  queueOp({ op: 'upsert', table: 'sales', action: 'sale', rec, summary: '🛒 ' + money(total) + ' · ' + items.length + L(' paninda', ' items') + ' · ' + METHODS[method][1] });
+  S.cart = []; saveCart(); closeSheet(true);
+  // newly low / out items
+  const newly = Object.keys(before).map(id => S.products.find(p => p.id === id)).filter(p => p && stockState(p) !== 'ok' && stockState(p) !== before[p.id]);
+  showDone(rec, newly);
+  render();
+}
+function showDone(s, newly) {
+  const el = openSheet('<div style="text-align:center"><div style="width:120px;margin:0 auto">' + mascot('cheer', 'hop') + '</div><div style="font-size:22px;font-weight:900;margin:4px 0 10px">' + praise() + '</div></div>' +
+    (s.method === 'cash' ? '<div class="change" style="margin-bottom:10px"><span>' + L('Sukli', 'Change') + '</span><b style="font-size:34px">' + money(s.change) + '</b></div>' : '<div class="change" style="background:var(--teal2);color:var(--tealD)"><span>' + METHODS[s.method].join(' ') + '</span><b>' + money(s.total) + '</b></div>') +
+    (newly.length ? '<div class="lockbar">⚠️ ' + newly.map(p => esc(p.name) + ': ' + (stockOf(p) <= 0 ? L('ubos na', 'out') : stockOf(p) + L(' na lang', ' left'))).join(' · ') + '</div>' : '') +
+    '<div class="row2"><button class="btn soft" data-r>🧾 ' + L('Resibo', 'Receipt') + '</button><button class="btn pink" data-n>🛒 ' + L('Susunod', 'Next') + '</button></div>');
+  el.querySelector('[data-n]').onclick = () => closeSheet();
+  el.querySelector('[data-r]').onclick = () => openSale(s);
+  if (newly.length) beep(false);
+}
+function receiptText(s) {
+  const w = 32, line = (a, b) => { a = String(a); b = String(b); return a + ' '.repeat(Math.max(1, w - a.length - b.length)) + b; };
+  const out = [storeName(), prettyDate(s.date) + ' ' + hhmm(s.createdAt), '-'.repeat(w)];
+  (s.items || []).forEach(it => { out.push(it.name.slice(0, w)); out.push(line('  ' + it.qty + ' x ' + it.price.toFixed(2), (it.qty * it.price).toFixed(2))); });
+  out.push('-'.repeat(w), line('TOTAL', money(s.total)));
+  if (s.method === 'cash') out.push(line(L('Bayad', 'Cash'), money(s.paid)), line(L('Sukli', 'Change'), money(s.change)));
+  else out.push(line(METHODS[s.method][1], money(s.total)) + (s.note ? '\nRef: ' + s.note : ''));
+  out.push('', L('Salamat po! 🐱', 'Thank you! 🐱'));
+  return out.join('\n');
+}
+function openSale(s) {
+  const lock = voidLock(s);
+  const el = openSheet('<div class="sheet-head"><h2>🧾 ' + L('Resibo', 'Receipt') + '</h2><button class="x" data-x>×</button></div>' +
+    (s.voided ? '<div class="lockbar">❌ VOID' + (s.voidBy ? ' · ' + esc(s.voidBy) : '') + '</div>' : '') +
+    '<div class="receipt"><div class="c"><b>' + esc(storeName()) + '</b><br>' + prettyDate(s.date) + ' ' + hhmm(s.createdAt) + '<br>' + L('Nagbenta: ', 'Cashier: ') + esc(s.by || '') + '</div><hr>' +
+    (s.items || []).map(it => '<div>' + esc(it.name) + '</div><div class="rw"><span>&nbsp; ' + it.qty + ' × ' + money(it.price) + '</span><span>' + money(it.qty * it.price) + '</span></div>').join('') +
+    '<hr><div class="rw"><b>TOTAL</b><b>' + money(s.total) + '</b></div>' +
+    (s.method === 'cash' ? '<div class="rw"><span>' + L('Bayad', 'Cash') + '</span><span>' + money(s.paid) + '</span></div><div class="rw"><span>' + L('Sukli', 'Change') + '</span><span>' + money(s.change) + '</span></div>'
+      : '<div class="rw"><span>' + METHODS[s.method].join(' ') + '</span><span>' + money(s.total) + '</span></div>' + (s.note ? '<div>Ref: ' + esc(s.note) + '</div>' : '')) + '</div>' +
+    '<div class="row2"><button class="btn soft" data-share>📤 ' + L('I-share', 'Share') + '</button><button class="btn soft" data-print>🖨️ Print</button></div>' +
+    (!s.voided ? (lock ? '<div class="lockbar" style="margin-top:12px">' + lock + '</div>' : '<button class="btn danger" data-void style="margin-top:10px">❌ ' + L('I-void ang benta', 'Void this sale') + '</button>') : ''));
+  el.querySelector('[data-x]').onclick = () => closeSheet();
+  el.querySelector('[data-share]').onclick = async () => {
+    const t = receiptText(s);
+    try { if (navigator.share) { await navigator.share({ text: t }); return; } } catch (e) { return; }
+    try { await navigator.clipboard.writeText(t); toast(L('Nakopya ang resibo!', 'Receipt copied!'), 'happy'); } catch (e) { prompt('Copy:', t); }
+  };
+  el.querySelector('[data-print]').onclick = () => { const pa = $('#printArea'); pa.innerHTML = '<pre style="font:14px monospace">' + esc(receiptText(s)) + '</pre>'; document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); };
+  const vb = el.querySelector('[data-void]');
+  if (vb) vb.onclick = async () => {
+    if (!await confirmSheet('❌ ' + L('I-void?', 'Void?'), L('Babalik sa stock ang mga paninda at hindi na bibilangin ang ' + money(s.total) + '.' + (isOwner() ? '' : ' Aabisuhan si Owner.'), 'Items go back to stock and ' + money(s.total) + ' will no longer count.' + (isOwner() ? '' : ' The owner will be notified.')), 'Void', true)) return;
+    queueOp({ op: 'upsert', table: 'sales', action: 'void', rec: Object.assign({}, s, { voided: true, voidBy: myName(), updatedAt: nowIso() }), summary: '❌ Void ' + money(s.total) + ' · ' + saleTitle(s) });
+    toast(L('Na-void na', 'Voided'), 'happy'); render();
+  };
+}
+
+/* =================================================================
+   CAMERA SCANNER
+   Android Chrome: built-in BarcodeDetector. iPhone: Muffin's own reader.
+   ================================================================= */
+/* ---------- Muffin's barcode reader: EAN-13 / EAN-8 / UPC-A from camera frames ---------- */
+const EAN = (() => {
+  const L = [[3, 2, 1, 1], [2, 2, 2, 1], [2, 1, 2, 2], [1, 4, 1, 1], [1, 1, 3, 2], [1, 2, 3, 1], [1, 1, 1, 4], [1, 3, 1, 2], [1, 2, 1, 3], [3, 1, 1, 2]];
+  const G = L.map(p => p.slice().reverse());
+  const PAR = ['OOOOOO', 'OOEOEE', 'OOEEOE', 'OOEEEO', 'OEOOEE', 'OEEOOE', 'OEEEOO', 'OEOEOE', 'OEOEEO', 'OEEOEO'];
+  function matchDigit(r, a, tables) {
+    const s = r[a] + r[a + 1] + r[a + 2] + r[a + 3];
+    let best = null, bestErr = 9, second = 9;
+    for (const [tag, tab] of tables) for (let d = 0; d < 10; d++) {
+      const p = tab[d]; let e = 0;
+      for (let k = 0; k < 4; k++) e += Math.abs(r[a + k] * 7 / s - p[k]);
+      if (e < bestErr) { second = bestErr; bestErr = e; best = [d, tag]; } else if (e < second) second = e;
+    }
+    if (!best || bestErr > 1.8 || second - bestErr < 0.15) return null;
+    return best;
+  }
+  function guardOk(r, a, n, m) { for (let k = 0; k < n; k++) { const q = r[a + k] / m; if (q < 0.4 || q > 1.9) return false; } return true; }
+  function checksumOk(code) {
+    const d = code.split('').map(Number), last = d.pop();
+    let sum = 0;
+    for (let i = d.length - 1, w = 3; i >= 0; i--, w = 4 - w) sum += d[i] * w;
+    return (10 - sum % 10) % 10 === last;
+  }
+  // r: run lengths, first index i is a BAR
+  function try13(r, i) {
+    if (i + 59 > r.length) return null;
+    let tot = 0; for (let k = 0; k < 59; k++) tot += r[i + k];
+    const m = tot / 95;
+    if (!guardOk(r, i, 3, m) || !guardOk(r, i + 27, 5, m) || !guardOk(r, i + 56, 3, m)) return null;
+    if (i > 0 && r[i - 1] < m * 4) return null; // quiet zone before
+    if (i + 59 < r.length && r[i + 59] < m * 4) return null; // quiet zone after
+    let par = '', left = '', right = '';
+    for (let j = 0; j < 6; j++) { const x = matchDigit(r, i + 3 + 4 * j, [['O', L], ['E', G]]); if (!x) return null; left += x[0]; par += x[1]; }
+    for (let j = 0; j < 6; j++) { const x = matchDigit(r, i + 32 + 4 * j, [['R', L]]); if (!x) return null; right += x[0]; }
+    const first = PAR.indexOf(par); if (first < 0) return null;
+    const code = first + left + right;
+    return checksumOk(code) ? code : null;
+  }
+  function try8(r, i) {
+    if (i + 43 > r.length) return null;
+    let tot = 0; for (let k = 0; k < 43; k++) tot += r[i + k];
+    const m = tot / 67;
+    if (!guardOk(r, i, 3, m) || !guardOk(r, i + 19, 5, m) || !guardOk(r, i + 40, 3, m)) return null;
+    if (!(i > 0 && r[i - 1] >= m * 5) || !(i + 43 < r.length ? r[i + 43] >= m * 5 : true)) return null;
+    let code = '';
+    for (let j = 0; j < 4; j++) { const x = matchDigit(r, i + 3 + 4 * j, [['O', L]]); if (!x) return null; code += x[0]; }
+    for (let j = 0; j < 4; j++) { const x = matchDigit(r, i + 24 + 4 * j, [['R', L]]); if (!x) return null; code += x[0]; }
+    return checksumOk(code) ? code : null;
+  }
+  // sub-pixel edges: returns run widths (floats) and whether the first run is dark
+  function edgeRuns(g, thr) {
+    const n = g.length, edges = [];
+    let dark = g[0] < thr[0];
+    const first = dark ? 1 : 0;
+    for (let i = 0; i < n - 1; i++) {
+      const a = g[i] - thr[i], b = g[i + 1] - thr[i + 1];
+      if ((a < 0) !== (b < 0)) edges.push(i + a / (a - b));
+    }
+    const r = [];
+    let prev = 0;
+    for (const e of edges) { r.push(Math.max(0.3, e - prev)); prev = e; }
+    r.push(n - prev);
+    return { r, first };
+  }
+  function windowAt(r, k, len, rev) {
+    if (!rev) return [r, k];
+    const w = r.slice(k, k + len).reverse();
+    w.unshift(k + len < r.length ? r[k + len] : 999);
+    w.push(k > 0 ? r[k - 1] : 999);
+    return [w, 1];
+  }
+  function scanRuns(r, first) {
+    for (let k = 0; k < r.length; k++) {
+      const dark = ((k % 2 === 0) ? first : 1 - first) === 1;
+      if (!dark) continue;
+      let c = try13(r, k) || try8(r, k);
+      if (c) return c;
+      // read right-to-left (barcode upside down): window ends with a bar too
+      for (const len of [59, 43]) {
+        if (k + len > r.length) continue;
+        const [w, i] = windowAt(r, k, len, true);
+        c = len === 59 ? try13(w, i) : try8(w, i);
+        if (c) return c;
+      }
+    }
+    return null;
+  }
+  function thresholds(g, mode) {
+    const n = g.length, t = new Float32Array(n);
+    if (mode === 0) {
+      let lo = 255, hi = 0;
+      for (let i = (n * 0.05) | 0; i < n * 0.95; i++) { if (g[i] < lo) lo = g[i]; if (g[i] > hi) hi = g[i]; }
+      if (hi - lo < 25) return null;
+      t.fill((lo + hi) / 2);
+    } else {
+      const w = Math.max(10, (n / (mode === 1 ? 8 : 16)) | 0);
+      // sliding min/max midpoint (robust to uneven light)
+      for (let i = 0; i < n; i++) {
+        let lo = 255, hi = 0;
+        for (let j = Math.max(0, i - w); j <= Math.min(n - 1, i + w); j += 2) { const v = g[j]; if (v < lo) lo = v; if (v > hi) hi = v; }
+        t[i] = hi - lo < 25 ? -1 : (lo + hi) / 2;
+      }
+    }
+    return t;
+  }
+  function decodeLine(line) {
+    const n = line.length, g = new Float32Array(n);
+    for (let i = 0; i < n; i++) g[i] = (line[Math.max(0, i - 1)] + 2 * line[i] + line[Math.min(n - 1, i + 1)]) / 4;
+    const gr = g.slice().reverse();
+    for (const mode of [0, 1, 2]) for (const v of [g, gr]) {
+      const t = thresholds(v, mode); if (!t) continue;
+      const { r, first } = edgeRuns(v, t);
+      const c = scanRuns(r, first); if (c) return c;
+    }
+    return null;
+  }
+  // gray: Uint8Array w*h
+  function decodeImage(gray, w, h) {
+    const seen = {};
+    const hit = c => { if (!c) return null; seen[c] = (seen[c] || 0) + 1; return seen[c] >= 2 ? c : null; };
+    const rows = [0.5, 0.46, 0.54, 0.42, 0.58, 0.38, 0.62, 0.34, 0.66, 0.3, 0.7, 0.26, 0.74, 0.22, 0.78, 0.18, 0.82];
+    const line = new Float32Array(w);
+    for (const f of rows) {
+      const y = (h * f) | 0;
+      for (let x = 0; x < w; x++) line[x] = gray[y * w + x];
+      const c = hit(decodeLine(line)); if (c) return c;
+    }
+    const col = new Float32Array(h);
+    for (const f of [0.5, 0.42, 0.58, 0.34, 0.66, 0.26, 0.74]) {
+      const x = (w * f) | 0;
+      for (let y = 0; y < h; y++) col[y] = gray[y * w + x];
+      const c = hit(decodeLine(col)); if (c) return c;
+    }
+    return null;
+  }
+  function fromImageData(d) {
+    const { width: w, height: h, data } = d, g = new Uint8Array(w * h);
+    for (let i = 0, j = 0; i < g.length; i++, j += 4) g[i] = (data[j] * 77 + data[j + 1] * 150 + data[j + 2] * 29) >> 8;
+    return decodeImage(g, w, h);
+  }
+  return { decodeImage, fromImageData, checksumOk };
+})();
+let scannerOpen = false;
+async function openScanner(onCode, opts) {
+  opts = opts || {};
+  if (scannerOpen) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast(L('Walang camera access dito. Buksan sa Safari o Chrome.', 'No camera access here. Open in Safari or Chrome.'), 'sad'); return; }
+  scannerOpen = true;
+  const el = document.createElement('div'); el.className = 'scanner';
+  el.innerHTML = '<video playsinline muted autoplay></video><div class="box"></div><div class="laser" style="top:49%"></div>' +
+    '<div class="sbar"><button class="sbtn2" data-close aria-label="Close">✕</button><b>' + (opts.label || L('I-scan ang barcode', 'Scan the barcode')) + '</b><button class="sbtn2 hidden" data-torch aria-label="Light">🔦</button></div>' +
+    '<div class="foot"><div class="last hidden" data-last></div><div class="tip"><div class="m">' + mascot('scan') + '</div><div class="bubble" data-tip>' + L('Itapat ang barcode sa loob ng kahon. 🐱', 'Fit the barcode inside the box. 🐱') + '</div></div>' +
+    (opts.continuous ? '<button class="btn pink" data-done>✅ ' + L('Tapos na mag-scan', 'Done scanning') + '</button>' : '') + '</div>';
+  document.body.appendChild(el);
+  const video = el.querySelector('video'), box = el.querySelector('.box'), tip = el.querySelector('[data-tip]');
+  let stream = null, stopped = false, timer = null, lastCode = '', lastAt = 0, seen = { code: '', n: 0 }, idleSince = Date.now(), track = null;
+  const stop = () => {
+    if (stopped) return; stopped = true; scannerOpen = false; clearTimeout(timer);
+    try { stream && stream.getTracks().forEach(t => t.stop()); } catch (e) { }
+    el.remove();
+  };
+  el.querySelector('[data-close]').onclick = stop;
+  const done = el.querySelector('[data-done]'); if (done) done.onclick = stop;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+  } catch (e) {
+    stop();
+    toast(L('Hindi mabuksan ang camera. Payagan ang camera sa Settings ng phone.', "Couldn't open the camera. Allow camera access in your phone settings."), 'sad');
+    return;
+  }
+  if (stopped) { stream.getTracks().forEach(t => t.stop()); return; }
+  video.srcObject = stream;
+  try { await video.play(); } catch (e) { }
+  track = stream.getVideoTracks()[0];
+  try {
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (caps.torch) { const tb = el.querySelector('[data-torch]'); tb.classList.remove('hidden'); let on = false; tb.onclick = () => { on = !on; track.applyConstraints({ advanced: [{ torch: on }] }).catch(() => { }); }; }
+    if (caps.focusMode && caps.focusMode.includes('continuous')) track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => { });
+  } catch (e) { }
+
+  let detector = null;
+  if ('BarcodeDetector' in window) {
+    try {
+      const f = await BarcodeDetector.getSupportedFormats();
+      const want = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf'].filter(x => f.includes(x));
+      if (want.includes('ean_13')) detector = new BarcodeDetector({ formats: want });
+    } catch (e) { }
+  }
+  const cv = document.createElement('canvas'), ctx = cv.getContext('2d', { willReadFrequently: true });
+  const found = code => {
+    const now = Date.now();
+    // same item still under the camera: wait until it leaves before counting it again
+    if (code === lastCode && now - lastAt < 1500) { lastAt = now; return; }
+    lastCode = code; lastAt = now; idleSince = now;
+    box.classList.add('hit'); setTimeout(() => box.classList.remove('hit'), 300);
+    const r = onCode(code);
+    const p = r && r.name ? r : findByCode(code);
+    const last = el.querySelector('[data-last]');
+    if (p) { last.classList.remove('hidden'); last.innerHTML = '<span>✅ ' + esc(p.name) + '</span><span>' + money(p.price) + '</span>'; }
+    if (!opts.continuous || scanPause) stop();
+  };
+  async function tick() {
+    if (stopped) return;
+    try {
+      if (video.readyState >= 2 && video.videoWidth) {
+        let code = null;
+        if (detector) {
+          const res = await detector.detect(video);
+          if (res && res.length) code = res[0].rawValue;
+        } else {
+          // crop the middle band (where the box is) and read it
+          const vw = video.videoWidth, vh = video.videoHeight;
+          const W = Math.min(960, vw), sc = W / vw, bandH = Math.round(vh * 0.5), y0 = Math.round(vh * 0.25);
+          cv.width = W; cv.height = Math.round(bandH * sc);
+          ctx.drawImage(video, 0, y0, vw, bandH, 0, 0, cv.width, cv.height);
+          const c = EAN.fromImageData(ctx.getImageData(0, 0, cv.width, cv.height));
+          // must read the same code in 2 frames before we trust it
+          if (c) { if (seen.code === c) seen.n++; else seen = { code: c, n: 1 }; if (seen.n >= 2) { code = c; seen = { code: '', n: 0 }; } }
+        }
+        if (code) found(normCode(code));
+        else if (Date.now() - idleSince > 4500) { tip.textContent = L('Ilapit pa nang kaunti, at hawakan nang steady. Kailangan ng ilaw! 💡', 'Move a bit closer and hold steady. Good light helps! 💡'); idleSince = Date.now() + 99999; }
+      }
+    } catch (e) { }
+    timer = setTimeout(tick, detector ? 90 : 60);
+  }
+  tick();
+}
+
+/* ---------- Bluetooth / USB barcode scanners ----------
+   These "type" the barcode very fast and press Enter. We catch that anywhere in the app. */
+(() => {
+  let buf = '', last = 0, fast = 0;
+  document.addEventListener('keydown', e => {
+    const a = document.activeElement, typing = a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA');
+    if (typing || scannerOpen || !S.settings || document.querySelector('.screen')) { buf = ''; return; }
+    const now = Date.now();
+    if (e.key === 'Enter') {
+      if (buf.length >= 6 && fast >= buf.length - 2) {
+        e.preventDefault();
+        const code = buf; buf = '';
+        if (sheetEl && sheetEl.querySelector('#d-q')) { const q = sheetEl.querySelector('#d-q'); q.value = code; q.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); return; }
+        if (sheetEl && sheetEl.querySelector('#f-code')) { sheetEl.querySelector('#f-code').value = normCode(code); beep(); return; }
+        if (sheetEl) return;
+        if (S.view === 'items') { const p = findByCode(code); beep(!!p); if (p) openItem(p); else openItem(null, { barcode: normCode(code) }); return; }
+        handleScan(code);
+      }
+      buf = ''; fast = 0; return;
+    }
+    if (e.key.length !== 1) return;
+    if (now - last > 80) { buf = ''; fast = 0; } else fast++;
+    buf += e.key; last = now;
+  });
+})();
+
+/* =================================================================
+   SETTINGS, ALERTS, LOG
+   ================================================================= */
+function viewSettings() {
+  const s = S.settings, owner = isOwner();
+  const subTxt = !S.sub ? '' : S.sub.state === 'active' ? L('Active hanggang ', 'Active until ') + S.sub.until : S.sub.state === 'trial' ? L('Free trial: ' + S.sub.daysLeft + ' araw pa', 'Free trial: ' + S.sub.daysLeft + ' days left') : L('Tapos na', 'Ended');
+  const roleBtn = owner ? '<button class="lnk" data-act="lockOwner">🔒 ' + L('Gawing Staff', 'Switch to Staff') + '</button>'
+    : S.pinSet === false ? '<button class="lnk" data-act="createPin">🔑 ' + L('Gumawa ng PIN', 'Create PIN') + '</button>'
+      : '<button class="lnk" data-act="unlockOwner">🔑 ' + L('Ako ang Owner', "I'm the Owner") + '</button>';
+  let h = '<h2>⚙️ Settings</h2>' +
+    '<div class="card"><div class="b">🙋 ' + L('Ikaw (sa phone na ito)', 'You (on this phone)') + '</div>' +
+    '<div class="set"><div>' + L('Pangalan mo', 'Your name') + '<div class="muted">' + esc(myName() || '—') + '</div></div><button class="lnk" data-act="changeName">' + L('Palitan', 'Change') + '</button></div>' +
+    '<div class="set"><div>' + L('Papel mo', 'Your role') + '<div class="muted">' + (owner ? '👑 Owner' : '🙋 Staff') + '</div></div>' + roleBtn + '</div>' +
+    '<div class="set"><div>' + L('Wika', 'Language') + '</div><div class="seg" style="margin:0;padding:3px;box-shadow:none;background:var(--bg2)"><button style="padding:8px 12px" class="' + (LANG === 'tl' ? 'on' : '') + '" data-act="lang" data-arg="tl">Tagalog</button><button style="padding:8px 12px" class="' + (LANG === 'en' ? 'on' : '') + '" data-act="lang" data-arg="en">English</button></div></div></div>';
+  h += '<div class="card"><div class="b">📷 Scanner</div>' +
+    '<div class="set"><div>' + L('Subukan ang camera scanner', 'Test the camera scanner') + '</div><button class="lnk" data-act="testScan">' + L('Subukan', 'Test') + '</button></div>' +
+    '<div class="set"><div>🔵 ' + L('Bluetooth / USB scanner', 'Bluetooth / USB scanner') + '<div class="muted">' + L('I-pair sa phone (parang keyboard), tapos mag-scan lang — kusa itong papasok sa cart.', 'Pair it with the phone (like a keyboard), then just scan — it goes straight into the cart.') + '</div></div></div>' +
+    '<div class="set"><div>🔊 ' + L('Tunog kapag nag-scan', 'Beep on scan') + '</div><button class="switch ' + (s.sound === false ? '' : 'on') + '" data-act="toggleSound" aria-label="sound"></button></div></div>';
+  if (owner) {
+    h += '<div class="card"><div class="b">👑 ' + L('Para sa Owner', 'Owner controls') + '</div>' +
+      '<div class="set"><div>🔔 ' + L('Mga pagbabago ng staff', 'Staff changes') + '<div class="muted">' + L('Presyo, bura, void, ayos ng bilang', 'Prices, deletes, voids, count fixes') + '</div></div><button class="lnk" data-act="go" data-arg="alerts">' + L('Tingnan', 'Open') + '</button></div>' +
+      '<div class="set"><div>📧 ' + L('Email para sa abiso', 'Email alerts') + '<div class="muted">' + esc(s.ownerEmail || L('Wala (opsyonal)', 'None (optional)')) + '</div></div><button class="lnk" data-act="editEmail">' + L('Palitan', 'Change') + '</button></div>' +
+      '<div class="set"><div>🔑 Owner PIN</div><button class="lnk" data-act="changePin">' + L('Palitan', 'Change') + '</button></div></div>' +
+      '<div class="card"><div class="b">🏪 ' + L('Tindahan', 'Store') + '</div>' +
+      '<div class="set"><div>' + L('Pangalan ng tindahan', 'Store name') + '<div class="muted">' + esc(storeName()) + '</div></div><button class="lnk" data-act="editStore">' + L('Palitan', 'Change') + '</button></div>' +
+      '<div class="set"><div>Currency<div class="muted">' + CURRENCIES[cur()].f + ' ' + CURRENCIES[cur()][LANG] + ' (' + sym() + ')</div></div><button class="lnk" data-act="editCur">' + L('Palitan', 'Change') + '</button></div>' +
+      '<div class="set"><div>⚠️ ' + L('Abiso sa paubos', 'Low-stock alert') + '<div class="muted">' + L('Kapag ' + lowDefault() + ' o mas kaunti na lang', 'When ' + lowDefault() + ' or fewer are left') + '</div></div><button class="lnk" data-act="editLow">' + L('Palitan', 'Change') + '</button></div></div>' +
+      '<div class="card"><div class="b">💳 ' + L('Paraan ng bayad', 'Payment methods') + '</div><div class="cats" style="margin-top:10px">' +
+      Object.keys(METHODS).map(k => '<button class="cat ' + ((s.methods || []).includes(k) ? 'sel' : '') + '" data-act="toggleMethod" data-arg="' + k + '">' + METHODS[k][0] + ' ' + METHODS[k][1] + '</button>').join('') + '</div></div>';
+  } else {
+    h += '<div class="lockbar">🔒 ' + L('Ang settings ng tindahan ay para sa Owner lang. Pwede kang magbenta, magdagdag ng paninda, at mag-ayos ng presyo — aabisuhan si Owner.', 'Store settings are for the owner only. You can sell, add items and change prices — the owner gets notified.') + '</div>';
+  }
+  h += '<div class="card"><div class="set"><div>🔗 Kwentoink<div class="muted">' + (s.kwLinked ? L('Naka-link — ang benta kada araw ay pumapasok sa Kwentoink', 'Linked — daily sales go into Kwentoink') : L('Hindi naka-link', 'Not linked')) + '</div></div><span>' + (s.kwLinked ? '✅' : '—') + '</span></div>' +
+    '<div class="set"><div>❓ ' + L('Tanong kay Muffin (tulong)', 'Ask Muffin (help)') + '</div><button class="lnk" data-act="go" data-arg="help">' + L('Buksan', 'Open') + '</button></div>' +
+    '<div class="set"><div>📜 ' + L('Kasaysayan ng pagbabago', 'Activity log') + '</div><button class="lnk" data-act="go" data-arg="log">' + L('Tingnan', 'Open') + '</button></div>' +
+    '<div class="set"><div>🎓 ' + L('Ulitin ang tutorial', 'Replay tutorial') + '</div><button class="lnk" data-act="replayTour">' + L('Simulan', 'Start') + '</button></div>' +
+    (isStandalone() ? '' : '<div class="set"><div>📲 ' + L('I-add sa Home Screen', 'Add to Home Screen') + '</div><button class="lnk" data-act="showInstall">' + L('Paano?', 'How?') + '</button></div>') +
+    '<div class="set"><div>🔄 Sync<div class="muted">' + (S.lastOk ? L('Huling sync: ', 'Last sync: ') + timeAgo(new Date(S.lastOk).toISOString()) : '—') + '</div></div><button class="lnk" data-act="syncNow">' + L('I-sync ngayon', 'Sync now') + '</button></div>' +
+    '<div class="set"><div>⭐ Subscription<div class="muted">' + subTxt + '</div></div></div></div>' +
+    '<div class="muted small b" style="text-align:center;margin:16px 0">Puscart v' + VERSION + (DEMO ? ' · DEMO' : '') + ' 🐱</div>';
+  return h;
+}
+const ACT_ICON = { add: '＋', edit: '✏️', delete: '🗑️', sale: '🛒', void: '❌', in: '📥', adj: '📦', settings: '⚙️', setup: '🎉' };
+function actWord(a) { return ({ add: L('nagdagdag ng paninda', 'added an item'), edit: L('nag-edit', 'edited'), delete: L('nagbura', 'deleted'), sale: L('nagbenta', 'made a sale'), void: L('nag-void ng benta', 'voided a sale'), in: L('nagdagdag ng stock', 'added stock'), adj: L('nag-ayos ng bilang', 'fixed a count'), settings: L('binago ang settings', 'changed settings'), setup: L('nag-setup ng tindahan', 'set up the store') })[a] || esc(a); }
+function viewAlerts() {
+  const rows = staffChanges(), seen = LS.get(K('seen'), '');
+  if (rows.length) { const mx = rows.reduce((a, r) => String(r.time) > a ? String(r.time) : a, ''); setTimeout(() => { LS.set(K('seen'), mx); updateBell(); }, 1200); }
+  let h = '<h2>🔔 ' + L('Mga pagbabago ng staff', 'Staff changes') + '</h2><button class="btn soft" data-act="go" data-arg="sell" style="margin-bottom:12px">← ' + L('Balik', 'Back') + '</button>';
+  if (!rows.length) return h + '<div class="card empty"><div class="m">' + mascot('happy') + '</div>' + L('Walang binago ang staff. 👍', 'No staff changes. 👍') + '</div>';
+  return h + '<div class="card" style="padding:6px 14px">' + rows.map(r => '<div class="log"><div class="av">' + (ACT_ICON[r.action] || '•') + '</div><div><div class="t1">' + esc(r.by || '?') + ' ' + actWord(r.action) + (String(r.time) > seen ? ' <span class="tag">' + L('BAGO', 'NEW') + '</span>' : '') + '</div><div class="t2">' + esc(r.summary || '') + '</div><div class="t2">' + timeAgo(r.time) + '</div></div></div>').join('') + '</div>';
+}
+function viewLog() {
+  let h = '<h2>📜 ' + L('Kasaysayan', 'Activity log') + '</h2><button class="btn soft" data-act="go" data-arg="settings" style="margin-bottom:12px">← Settings</button>';
+  const pend = S.ops.map(o => ({ time: o.at, by: o.by, action: o.action || o.op, summary: o.summary, pending: true }));
+  const rows = pend.reverse().concat(S.log);
+  if (!rows.length) return h + '<div class="card empty"><div class="m">' + mascot('think') + '</div>' + ((!navigator.onLine && !DEMO) ? L('Kailangan ng internet para makita ang kasaysayan.', 'Need internet to load the history.') : L('Wala pa.', 'Nothing yet.')) + '</div>';
+  return h + '<div class="card" style="padding:6px 14px">' + rows.slice(0, 300).map(r => '<div class="log"><div class="av">' + (ACT_ICON[r.action] || '•') + '</div><div><div class="t1">' + esc(r.by || '?') + (r.role ? '<span class="role ' + r.role + '">' + (r.role === 'owner' ? 'Owner' : 'Staff') + '</span>' : '') + ' ' + actWord(r.action) + '</div><div class="t2">' + esc(r.summary || '') + '</div><div class="t2">' + timeAgo(r.time) + (r.pending ? ' · ⏳ ' + L('hindi pa naka-sync', 'not synced yet') : '') + '</div></div></div>').join('') + '</div>';
+}
+
+/* =================================================================
+   TULONG (built-in help, no AI needed)
+   ================================================================= */
+const HELP = [
+  [['Paano magbenta?', 'How do I make a sale?'], ['I-scan ang barcode (📷 o Bluetooth scanner), o pindutin ang paninda sa Benta. Pag kumpleto na, pindutin ang <b>Bayad →</b>, ilagay ang natanggap na pera, tapos <b>Tapos na ang benta</b>. Si Muffin na ang bahala sa sukli!', 'Scan the barcode (📷 or a Bluetooth scanner), or tap an item on Sell. When done, tap <b>Pay →</b>, enter the cash received, then <b>Complete sale</b>. Muffin works out the change!'], 'benta sell sale scan bayad pay cart'],
+  [['Paano mag-scan gamit ang camera?', 'How do I scan with the camera?'], ['Pindutin ang pink na 📷. Itapat ang barcode sa loob ng kahon, mga isang dangkal ang layo, at hawakan nang steady. Kailangan ng ilaw. Tuloy-tuloy kang makaka-scan — pindutin ang <b>Tapos na mag-scan</b> kapag tapos na.', 'Tap the pink 📷. Fit the barcode inside the box, about a hand-span away, and hold steady. Good light helps. You can keep scanning — tap <b>Done scanning</b> when finished.'], 'camera scan barcode kamera iphone'],
+  [['Ayaw mag-scan / hindi mabasa ang barcode', "The barcode won't scan"], ['Subukan: ilapit o ilayo nang kaunti, iwasan ang anino at kinang, linisin ang camera. Sa iPhone, mas mabagal nang kaunti ang scanner kaysa sa Android. Kung ayaw talaga, i-type ang numero ng barcode o ang pangalan sa search bar.', "Try: move a little closer or farther, avoid shadows and glare, wipe the camera. On iPhone the scanner is a bit slower than Android. If it still won't read, type the barcode number or the item name in the search bar."], 'ayaw hindi scan basa problem error slow'],
+  [['Pwede ba ang Bluetooth scanner?', 'Can I use a Bluetooth scanner?'], ['Oo! I-pair ang scanner sa phone o tablet (Settings → Bluetooth), parang keyboard. Buksan ang Puscart at mag-scan lang — papasok agad sa cart. Gumagana rin ang USB scanner sa tablet o computer.', 'Yes! Pair the scanner with the phone or tablet (Settings → Bluetooth), like a keyboard. Open Puscart and just scan — it goes straight into the cart. USB scanners work on tablets or computers too.'], 'bluetooth usb scanner hardware gun'],
+  [['Paano magdagdag ng paninda?', 'How do I add an item?'], ['Sa <b>Paninda</b>, pindutin ang <b>＋ Bagong paninda</b>. I-scan ang barcode, ilagay ang pangalan, presyo, at ilan ang stock ngayon. Pwede ring mag-scan lang sa Benta — kapag bago ang barcode, tatanungin ka agad.', 'In <b>Items</b>, tap <b>＋ New item</b>. Scan the barcode, enter the name, price and how many are in stock now. You can also just scan on Sell — if the barcode is new, you\'ll be asked right away.'], 'dagdag bago add new item product paninda register'],
+  [['Paano kung walang barcode ang paninda?', 'What if an item has no barcode?'], ['Gumawa ng paninda na walang barcode at i-ON ang <b>⭐ Mabilis na pindot</b>. Lalabas ito bilang button sa Benta (hal. yelo, itlog, tingi). O gamitin ang <b>＋ Iba pa</b> para presyo lang.', 'Create the item without a barcode and turn ON <b>⭐ Quick button</b>. It shows as a button on Sell (e.g. ice, eggs, loose items). Or use <b>＋ Other</b> for just a price.'], 'walang barcode no barcode quick tingi yelo itlog'],
+  [['Paano palitan ang presyo?', 'How do I change a price?'], ['Sa <b>Paninda</b>, pindutin ang paninda, palitan ang presyo, at I-save. Kapag staff ang nagpalit, aabisuhan si Owner (🔔). Para sa isang benta lang, pindutin ang pangalan ng paninda sa cart.', 'In <b>Items</b>, tap the item, change the price and Save. If staff change it, the owner is notified (🔔). For one sale only, tap the item name in the cart.'], 'presyo price change palit discount'],
+  [['Ano ang puhunan? Kailangan ba?', 'What is cost? Is it required?'], ['Ang puhunan ay kung magkano mo binili ang paninda. Hindi ito kailangan, pero kapag nilagay mo, makikita mo ang <b>Tubo</b> sa Ulat.', 'Cost is what you paid for the item. Not required, but if you add it, you\'ll see your <b>Profit</b> in Reports.'], 'puhunan cost capital tubo profit'],
+  [['Paano malalaman ang natitirang stock?', 'How do I see stock left?'], ['Sa <b>Paninda</b>, may badge ang bawat isa: berde = ok, dilaw = paubos, pula = ubos. Kusang nababawasan tuwing may benta.', 'In <b>Items</b>, each one has a badge: green = ok, yellow = low, red = out. It goes down automatically with each sale.'], 'stock natitira left inventory imbentaryo bilang'],
+  [['Dumating ang delivery, paano ilista?', 'A delivery arrived — how do I record it?'], ['Sa <b>Paninda</b>, pindutin ang <b>📥 Dumating na stock</b>. I-scan o hanapin ang bawat paninda, ilagay kung ilan at magkano ang binayad (opsyonal), tapos I-save.', 'In <b>Items</b>, tap <b>📥 Stock arrived</b>. Scan or search each item, enter how many and what you paid (optional), then Save.'], 'delivery dumating restock supplier dagdag stock arrived'],
+  [['Mali ang bilang ng stock', 'The stock count is wrong'], ['Buksan ang paninda at pindutin ang <b>✏️ Ayusin ang bilang</b>. Piliin ang <b>Binilang ulit</b> at ilagay ang tunay na bilang. Para sa nasira o expired, piliin iyon at ilagay kung ilan.', 'Open the item and tap <b>✏️ Fix the count</b>. Choose <b>Recounted</b> and enter the real number. For damaged or expired items, choose that and enter how many.'], 'mali wrong count bilang nasira expired damaged lost nawala'],
+  [['Paano mag-set ng abiso sa paubos?', 'How do low-stock alerts work?'], ['May default na bilang sa Settings (hal. 5). Pwede ring iba-iba bawat paninda: buksan ang paninda at palitan ang <b>Abisuhan ako kapag</b>.', 'There\'s a default in Settings (e.g. 5). You can set it per item too: open the item and change <b>Warn me when</b>.'], 'abiso alert low paubos warning'],
+  [['Nagkamali sa benta, paano i-void?', 'I made a mistake — how do I void?'], ['Sa <b>Listahan</b>, pindutin ang benta, tapos <b>❌ I-void</b>. Babalik sa stock ang mga paninda. Ang staff ay pwedeng mag-void ng sarili nilang benta sa parehong araw lang, at aabisuhan si Owner.', 'In <b>Sales</b>, tap the sale, then <b>❌ Void</b>. Items go back to stock. Staff can void their own sales on the same day only, and the owner is notified.'], 'void mali mistake cancel bawi refund'],
+  [['Paano magbigay ng resibo?', 'How do I give a receipt?'], ['Pagkatapos ng benta, pindutin ang <b>🧾 Resibo</b>. Pwedeng i-share (Messenger, SMS) o i-print.', 'After a sale, tap <b>🧾 Receipt</b>. You can share it (Messenger, SMS) or print it.'], 'resibo receipt print share'],
+  [['GCash o Maya ang bayad', 'Paid by GCash or Maya'], ['Sa Bayad, piliin ang GCash/Maya at ilagay ang reference no. kung gusto mo. Owner ang pumipili kung anong paraan ng bayad ang lalabas (Settings).', 'On Pay, choose GCash/Maya and add the reference no. if you like. The owner picks which payment methods show (Settings).'], 'gcash maya bank card bayad payment method'],
+  [['Gumagana ba kahit walang internet?', 'Does it work offline?'], ['Oo! Tuloy lang ang benta. Naka-save sa phone at kusang magsi-sync kapag may internet na. Ang unang bukas lang ang kailangan ng internet.', 'Yes! Keep selling. It saves on the phone and syncs by itself when back online. Only the very first open needs internet.'], 'offline internet wifi data sync'],
+  [['Pwede bang gamitin ng staff sa ibang phone?', 'Can staff use it on another phone?'], ['Oo. Ipadala ang parehong link. Iisa ang tindahan, kahit ilang phone. Ang staff ay pwedeng magbenta at magdagdag ng paninda, pero ang Ulat at Settings ay para sa Owner lang.', "Yes. Send the same link. It's one store, on any number of phones. Staff can sell and add items, but Reports and Settings are owner-only."], 'staff tauhan phone device link share'],
+  [['Ano ang Owner PIN?', 'What is the Owner PIN?'], ['4 na numero na ikaw lang ang may alam. Kailangan ito para makita ang Ulat, palitan ang settings, at mag-void ng benta ng iba. Nakalimutan? Mag-message sa nagbigay ng link para ma-reset.', 'A 4-digit number only you know. You need it to see Reports, change settings, and void other people\'s sales. Forgot it? Message whoever gave you the link to reset it.'], 'pin owner password nakalimutan forgot'],
+  [['Saan makikita ang kita at tubo?', 'Where do I see sales and profit?'], ['Sa <b>📊 Ulat</b> (Owner lang): kabuuang benta, tubo, pinakamabenta, ayon sa bayad at staff, at halaga ng stock. Pwedeng i-download sa Excel.', 'In <b>📊 Reports</b> (owner only): total sales, profit, best sellers, by payment and staff, and stock value. Downloadable for Excel.'], 'ulat report kita tubo profit sales excel'],
+  [['Ano ang Kwentoink link?', 'What is the Kwentoink link?'], ['Kung gamit mo rin ang Kwentoink, pwedeng i-connect. Bawat araw, ang kabuuang benta (ayon sa bayad) ay kusang papasok sa Kita ng Kwentoink — hindi na kailangang ilista ulit.', 'If you also use Kwentoink, they can be connected. Each day, the sales total (per payment method) goes into Kwentoink Money In automatically — no need to record it twice.'], 'kwentoink bundle link connect bookkeeping'],
+  [['Paano i-install sa phone?', 'How do I install it?'], ['iPhone: buksan sa Safari → Share → Add to Home Screen. Android: Chrome → ⋮ → Install app. Nasa Settings → I-add sa Home Screen ang gabay.', 'iPhone: open in Safari → Share → Add to Home Screen. Android: Chrome → ⋮ → Install app. The guide is in Settings → Add to Home Screen.'], 'install home screen app download'],
+  [['Ano ang ibig sabihin ng ⏳ sa itaas?', 'What does ⏳ at the top mean?'], ['Bilang ng pagbabago na hindi pa naka-sync. Kapag ✓ Synced, nasa cloud na lahat.', "The number of changes not synced yet. When it says ✓ Synced, everything is in the cloud."], 'sync synced badge itaas top']
+];
+let helpQ = '', helpOpen = -1;
+function helpSearch(q) {
+  const words = q.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+  if (!words.length) return HELP.map((_, i) => i);
+  return HELP.map((h, i) => { const hay = (h[0].join(' ') + ' ' + h[2]).toLowerCase(); return [i, words.reduce((a, w) => a + (hay.includes(w) ? 1 : 0), 0)]; }).filter(x => x[1]).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+}
+function viewHelp() {
+  return '<h2>❓ ' + L('Tanong kay Muffin', 'Ask Muffin') + '</h2><div class="hello"><div class="m">' + mascot('hello') + '</div><div class="bubble">' + L('I-type ang salita at hanapin ang sagot! 🐱', 'Type a word to find the answer! 🐱') + '</div></div>' +
+    '<input class="search" id="helpQ" placeholder="🔎 ' + L('hal. scan, presyo, void', 'e.g. scan, price, void') + '" value="' + esc(helpQ) + '"><div id="helpList"></div>';
+}
+function bindHelp() {
+  const q = $('#helpQ'), list = $('#helpList');
+  const paint = () => {
+    const ids = helpSearch(helpQ), li = LANG === 'tl' ? 0 : 1;
+    list.innerHTML = ids.length ? '<div class="card" style="padding:4px 12px">' + ids.map(i => '<div style="border-bottom:1px dashed var(--line)"><button class="item" data-h="' + i + '" style="border:0"><div class="mid"><div class="t1" style="white-space:normal">' + esc(HELP[i][0][li]) + '</div></div><span>' + (helpOpen === i ? '▴' : '▾') + '</span></button>' + (helpOpen === i ? '<div class="infobar" style="margin:0 0 10px;font-size:14px">' + HELP[i][1][li] + '</div>' : '') + '</div>').join('') + '</div>'
+      : '<div class="card empty"><div class="m">' + mascot('think') + '</div>' + L('Walang nahanap. Subukan ang ibang salita.', 'Nothing found. Try another word.') + '</div>';
+    list.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { helpOpen = helpOpen === +b.dataset.h ? -1 : +b.dataset.h; paint(); });
+  };
+  q.oninput = () => { helpQ = q.value; helpOpen = -1; paint(); };
+  paint();
+}
+
+/* =================================================================
+   ACTIONS
+   ================================================================= */
+const ACTIONS = {
+  go: a => { go(a); if (a === 'log' || a === 'alerts') loadLog(); },
+  addP: id => { const p = S.products.find(x => x.id === id); if (p) { addToCart(p); beep(); } },
+  customItem: () => promptSheet(L('Presyo ng "Iba pa"', 'Price of "Other"'), '', 'money').then(v => { const n = num(v); if (!(n > 0)) return; S.cart.push({ key: uid('c'), pid: '', name: L('Iba pa', 'Other'), barcode: '', price: n, cost: 0, qty: 1 }); saveCart(); renderCart(S.cart[S.cart.length - 1].key); }),
+  lowGo: () => { S.itemsF = stockState(lowList()[0] || {}) === 'out' ? 'out' : 'low'; go('items'); },
+  itemsF: a => { S.itemsF = a; render(); },
+  newItem: () => openItem(null),
+  editItem: id => openItem(S.products.find(p => p.id === id)),
+  delivery: () => openDelivery(),
+  scanFind: () => openScanner(code => { const p = findByCode(code); beep(!!p); setTimeout(() => p ? openItem(p) : openItem(null, { barcode: code }), 50); return p; }, { continuous: false }),
+  salesP: a => { S.salesP = a; render(); },
+  openSale: id => openSale(S.sales.find(s => s.id === id)),
+  repP: a => { S.repP = a; render(); },
+  csvSales: () => csvSales(),
+  csvStock: () => csvStock(),
+  lang: a => { LANG = a; LS.set(K('lang'), a); document.documentElement.lang = a === 'tl' ? 'tl' : 'en'; render(); },
+  changeName: () => askName(true).then(render),
+  testScan: () => openScanner(code => { const p = findByCode(code); toast((p ? '✅ ' + p.name : L('Bagong barcode: ', 'New barcode: ') + code), p ? 'cheer' : 'scan'); beep(); return p; }, { continuous: false }),
+  toggleSound: () => saveSettings({ sound: S.settings.sound === false }, L('Tunog', 'Sound')),
+  editStore: () => promptSheet(L('Pangalan ng tindahan', 'Store name'), storeName(), 'text').then(v => { if (v && v.trim()) saveSettings({ storeName: v.trim() }, L('Pangalan ng tindahan', 'Store name') + ': ' + v.trim()); }),
+  editCur: () => pickSheet('Currency', Object.keys(CURRENCIES).map(k => ({ v: k, label: CURRENCIES[k].f + ' ' + CURRENCIES[k][LANG] + ' (' + CURRENCIES[k].sym + ')' })), cur()).then(v => { if (v) { _nf = {}; saveSettings({ currency: v }, 'Currency: ' + v); } }),
+  editLow: () => promptSheet(L('Abisuhan kapag ilan na lang?', 'Warn when how many are left?'), lowDefault(), 'num').then(v => { if (v !== null && v !== '') saveSettings({ lowDefault: num(v) }, L('Abiso sa paubos: ', 'Low-stock alert: ') + num(v)); }),
+  toggleMethod: k => { const m = (S.settings.methods || ['cash']).slice(); const i = m.indexOf(k); if (i >= 0) { if (m.length === 1) return; m.splice(i, 1); } else m.push(k); saveSettings({ methods: m }, METHODS[k][1]); },
+  replayTour: () => { go('sell'); setTimeout(() => runTour(isOwner() || isOwnerDevice() ? 'full' : 'short'), 300); },
+  showInstall: () => installGuide(true),
+  syncNow: () => { flush(true); loadLog(); toast(L('Nagsi-sync…', 'Syncing…'), 'happy'); },
+  unlockOwner: () => unlockOwner(),
+  createPin: () => createPinFlow(false),
+  changePin: () => createPinFlow(false, true),
+  lockOwner: async () => { if (!await confirmSheet(L('Gawing Staff?', 'Switch to Staff?'), L('Kailangan ulit ang PIN para maging Owner sa phone na ito.', 'You will need the PIN to become Owner again on this phone.'), L('Oo', 'Yes'))) return; LS.del(K('pin')); render(); toast(L('Staff mode na ang phone na ito', 'This phone is now in Staff mode'), 'happy'); },
+  editEmail: () => promptSheet(L('Email para sa abiso (opsyonal)', 'Email for alerts (optional)'), S.settings.ownerEmail || '', 'text').then(v => { if (v !== null) saveSettings({ ownerEmail: v.trim() }, L('Email para sa abiso', 'Alert email')); })
+};
+function saveSettings(data, summary) { queueOp({ op: 'settings', data, action: 'settings', summary }).then(render); }
+
+/* ---------- owner PIN ---------- */
+function askPin(title, sub) {
+  return new Promise(res => {
+    let done = false;
+    const el = openSheet('<div class="sheet-head"><h2>' + title + '</h2><button class="x" data-x>×</button></div>' +
+      '<div style="text-align:center"><div style="width:84px;margin:0 auto">' + mascot('think') + '</div><div class="small b muted" style="margin:6px 0 12px">' + sub + '</div></div>' +
+      '<div class="pinbox">' + [0, 1, 2, 3].map(i => '<input type="password" inputmode="numeric" maxlength="1" pattern="[0-9]*" autocomplete="off" data-i="' + i + '">').join('') + '</div>', () => { if (!done) res(null); });
+    const ins = Array.from(el.querySelectorAll('.pinbox input'));
+    el.querySelector('[data-x]').onclick = () => closeSheet();
+    setTimeout(() => ins[0].focus(), 250);
+    ins.forEach((inp, i) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g, '').slice(-1);
+        if (inp.value && i < 3) ins[i + 1].focus();
+        const pin = ins.map(x => x.value).join('');
+        if (pin.length === 4) { done = true; setTimeout(() => { closeSheet(); res(pin); }, 100); }
+      });
+      inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && i > 0) ins[i - 1].focus(); });
+    });
+  });
+}
+async function unlockOwner() {
+  if (!navigator.onLine && !DEMO) { toast(L('Kailangan ng internet para i-check ang PIN', 'Need internet to check the PIN'), 'think'); return; }
+  const pin = await askPin('🔑 Owner PIN', L('Ilagay ang 4-digit PIN ng Owner', "Enter the owner's 4-digit PIN"));
+  if (!pin) return;
+  const h = await pinHash(pin);
+  try {
+    const j = await api('verifyPin', { pinHash: h });
+    if (j.locked) { toast(L('Maraming maling subok. Subukan ulit after 15 minuto.', 'Too many wrong tries. Try again in 15 minutes.'), 'sad'); return; }
+    if (!j.valid) { toast(L('Mali ang PIN', 'Wrong PIN'), 'sad'); return; }
+    LS.set(K('pin'), h); LS.set(K('owner'), true);
+    flush(true); render(); loadLog(); toast(L('Owner mode na! 👑', 'Owner mode on! 👑'), 'cheer');
+  } catch (e) { toast(L('Hindi ma-check ngayon. Subukan ulit.', "Couldn't check right now. Try again."), 'sad'); }
+}
+async function createPinFlow(firstTime, change) {
+  if (!navigator.onLine && !DEMO) { toast(L('Kailangan ng internet', 'Internet needed'), 'think'); return; }
+  const p1 = await askPin(change ? L('Bagong PIN', 'New PIN') : L('Gumawa ng Owner PIN', 'Create Owner PIN'), L('4 na numero. Tandaan mo ito!', '4 digits. Remember it!'));
+  if (!p1) return;
+  const p2 = await askPin(L('Ulitin ang PIN', 'Repeat the PIN'), L('I-type ulit para sigurado', 'Type it again to confirm'));
+  if (!p2) return;
+  if (p1 !== p2) { toast(L('Hindi magkapareho. Subukan ulit.', "They didn't match. Try again."), 'sad'); return; }
+  const h = await pinHash(p1);
+  try {
+    const j = await api('setPin', { pinHash: h, oldPinHash: pinKey(), by: myName() });
+    LS.set(K('pin'), h); LS.set(K('owner'), true);
+    applyServer(j); await saveCache(); render();
+    toast(L('Naka-set na ang PIN! 👑', 'PIN saved! 👑'), 'cheer');
+  } catch (e) {
+    toast(String(e.message).includes('PIN_EXISTS') ? L('May PIN na. Gamitin ang "Ako ang Owner".', 'A PIN already exists. Use "I\'m the Owner".') : L('Hindi na-save. Subukan ulit.', "Couldn't save. Try again."), 'sad');
+  }
+}
+
+/* =================================================================
+   FIRST-TIME SCREENS
+   ================================================================= */
+function screen(html) {
+  const el = document.createElement('div'); el.className = 'screen'; el.innerHTML = '<div class="inner">' + html + '</div>';
+  document.body.appendChild(el); return el;
+}
+function carryParams() {
+  // iPhone keeps Safari and the Home Screen app separate — remember progress in the link
+  if (isStandalone()) return;
+  const p = new URLSearchParams(); p.set('id', CODE);
+  if (myName()) p.set('n', myName());
+  if (LS.get(K('tour'), false)) p.set('t', '1');
+  if (isOwnerDevice()) p.set('o', '1');
+  if (LS.get(K('lang'), null)) p.set('l', LANG);
+  try { history.replaceState(null, '', location.pathname + '?' + p.toString()); } catch (e) { }
+}
+function readCarried() {
+  if (!isStandalone()) return;
+  if (qs.get('n') && !LS.get(K('name'), '')) LS.set(K('name'), qs.get('n'));
+  if (qs.get('t') === '1') LS.set(K('tour'), true);
+  if (qs.get('o') === '1') LS.set(K('owner'), true);
+  if (qs.get('l') && !LS.get(K('lang'), null)) { LS.set(K('lang'), qs.get('l')); LANG = qs.get('l'); }
+  if (LS.get(K('name'), '')) LS.set(K('inst'), true);
+}
+
+/* ---------- install guide ---------- */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
+window.addEventListener('appinstalled', () => { LS.set(K('inst'), true); toast(L('Yehey, naka-install na! 🎉', 'Yay, installed! 🎉'), 'cheer'); });
+const SHARE_ICON = '<svg width="16" height="18" viewBox="0 0 16 20" style="vertical-align:-3px"><path d="M8 1v12M4 5l4-4 4 4" stroke="#2c6fd6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8H2v11h12V8h-3" stroke="#2c6fd6" stroke-width="2" fill="none" stroke-linejoin="round"/></svg>';
+function needInstallGuide() {
+  if (isStandalone() || LS.get(K('inst'), false) || LS.get(K('instLater'), 0) > Date.now()) return false;
+  return IS_IOS || IS_ANDROID;
+}
+function installGuide(manual) {
+  return new Promise(resolve => {
+    let steps, arrow = '', title;
+    const cleanLink = location.origin + location.pathname + '?id=' + CODE;
+    if (IN_APP) {
+      title = L('Buksan muna sa ' + (IS_IOS ? 'Safari' : 'Chrome'), 'First, open in ' + (IS_IOS ? 'Safari' : 'Chrome'));
+      arrow = 'tr';
+      steps = [
+        L('Pindutin ang <span class="kbd">•••</span> sa itaas (kanan).', 'Tap <span class="kbd">•••</span> at the top right.'),
+        L('Piliin ang <span class="kbd">Open in ' + (IS_IOS ? 'Safari' : 'Chrome') + '</span> o <span class="kbd">Open in browser</span>.', 'Choose <span class="kbd">Open in ' + (IS_IOS ? 'Safari' : 'Chrome') + '</span> or <span class="kbd">Open in browser</span>.'),
+        L('O kaya, kopyahin ang link at i-paste sa ' + (IS_IOS ? 'Safari' : 'Chrome') + ':', 'Or copy the link and paste it into ' + (IS_IOS ? 'Safari' : 'Chrome') + ':') + '<button class="btn soft" style="margin-top:8px;padding:10px" id="copyLink">📋 ' + L('Kopyahin ang link', 'Copy link') + '</button>'
+      ];
+    } else if (IS_IOS && IS_CRIOS) {
+      title = L('I-add sa Home Screen', 'Add to Home Screen'); arrow = 'tr';
+      steps = [
+        L('Pindutin ang Share ' + SHARE_ICON + ' sa itaas (kanan), sa tabi ng address bar.', 'Tap Share ' + SHARE_ICON + ' at the top right, next to the address bar.'),
+        L('Mag-scroll pababa at pindutin ang <span class="kbd">Add to Home Screen</span>.', 'Scroll down and tap <span class="kbd">Add to Home Screen</span>.'),
+        L('Pindutin ang <span class="kbd">Add</span>. Tapos!', 'Tap <span class="kbd">Add</span>. Done!')
+      ];
+    } else if (IS_IOS) {
+      title = L('I-add sa Home Screen', 'Add to Home Screen');
+      const newSafari = SAFARI_VER >= 26;
+      arrow = newSafari ? 'br' : 'bc';
+      steps = newSafari ? [
+        L('Pindutin ang <span class="kbd">•••</span> sa baba (kanan) — o ang Share ' + SHARE_ICON + ' kung nakikita mo.', 'Tap <span class="kbd">•••</span> at the bottom right — or Share ' + SHARE_ICON + ' if you see it.'),
+        L('Pindutin ang <span class="kbd">Share</span> ' + SHARE_ICON + ', tapos mag-scroll pababa.', 'Tap <span class="kbd">Share</span> ' + SHARE_ICON + ', then scroll down.'),
+        L('Pindutin ang <span class="kbd">Add to Home Screen</span>.', 'Tap <span class="kbd">Add to Home Screen</span>.'),
+        L('Siguraduhing naka-ON ang <span class="kbd">Open as Web App</span>, tapos <span class="kbd">Add</span>.', 'Make sure <span class="kbd">Open as Web App</span> is ON, then tap <span class="kbd">Add</span>.')
+      ] : [
+        L('Pindutin ang Share ' + SHARE_ICON + ' sa baba (gitna).', 'Tap Share ' + SHARE_ICON + ' at the bottom (middle).'),
+        L('Mag-scroll pababa at pindutin ang <span class="kbd">Add to Home Screen</span>.', 'Scroll down and tap <span class="kbd">Add to Home Screen</span>.'),
+        L('Pindutin ang <span class="kbd">Add</span> sa itaas (kanan). Tapos!', 'Tap <span class="kbd">Add</span> at the top right. Done!')
+      ];
+    } else {
+      title = L('I-install ang Puscart', 'Install Puscart'); arrow = deferredPrompt ? '' : 'tr';
+      steps = deferredPrompt ? [L('Pindutin ang malaking button sa baba. Isang tap lang!', 'Tap the big button below. Just one tap!')] : [
+        L('Pindutin ang <span class="kbd">⋮</span> sa itaas (kanan).', 'Tap <span class="kbd">⋮</span> at the top right.'),
+        L('Pindutin ang <span class="kbd">Add to Home screen</span> o <span class="kbd">Install app</span>.', 'Tap <span class="kbd">Add to Home screen</span> or <span class="kbd">Install app</span>.'),
+        L('Pindutin ang <span class="kbd">Install</span>. Tapos!', 'Tap <span class="kbd">Install</span>. Done!')
+      ];
+    }
+    const el = screen(
+      '<div style="text-align:center"><div class="wz-m" style="width:120px">' + mascot('wave') + '</div></div>' +
+      '<div class="wz-q">' + title + '<small>' + (IN_APP ? L('Hindi gagana nang maayos ang Puscart (at ang camera) sa loob ng Messenger/Facebook.', "Puscart (and the camera) won't work well inside Messenger/Facebook.") : L('Para bumukas ito na parang app, mabilis, at gumagana kahit walang internet!', 'So it opens like an app, loads fast, and works even offline!')) + '</small></div>' +
+      steps.map((s, i) => '<div class="inst-step"><div class="n">' + (i + 1) + '</div><div>' + s + '</div></div>').join('') +
+      '<div class="wz-foot" style="flex-direction:column">' +
+      (deferredPrompt && !IN_APP ? '<button class="btn pink" id="i-install">📲 ' + L('I-install ngayon', 'Install now') + '</button>' : '') +
+      (!IN_APP ? '<button class="btn main" id="i-done">✅ ' + L('Na-add ko na!', 'I added it!') + '</button>' : '') +
+      '<button class="btn soft" id="i-later">' + L('Mamaya na', 'Maybe later') + '</button></div>'
+    );
+    let ptr = null;
+    if (arrow) { ptr = document.createElement('div'); ptr.className = 'pointer ' + arrow; ptr.textContent = arrow === 'tr' ? '👆' : '👇'; document.body.appendChild(ptr); }
+    const finish = () => { el.remove(); ptr && ptr.remove(); resolve(); };
+    const cp = el.querySelector('#copyLink');
+    if (cp) cp.onclick = async () => { try { await navigator.clipboard.writeText(cleanLink); cp.textContent = '✓ ' + L('Nakopya!', 'Copied!'); } catch (e) { prompt('Copy:', cleanLink); } };
+    const ib = el.querySelector('#i-install');
+    if (ib) ib.onclick = async () => { deferredPrompt.prompt(); const c = await deferredPrompt.userChoice; deferredPrompt = null; if (c.outcome === 'accepted') { LS.set(K('inst'), true); finish(); } };
+    const d = el.querySelector('#i-done');
+    if (d) d.onclick = () => {
+      LS.set(K('inst'), true);
+      if (IS_IOS) {
+        el.querySelector('.inner').innerHTML = '<div style="text-align:center"><div class="wz-m">' + mascot('cheer') + '</div></div><div class="wz-q">' + L('Yehey! 🎉', 'Yay! 🎉') + '<small>' + L('Isara na ang Safari at buksan ang <b>Puscart</b> sa Home Screen mo. Hanapin si Muffin! 🐱', 'Close Safari and open <b>Puscart</b> from your Home Screen. Look for Muffin! 🐱') + '</small></div>' +
+          '<div class="wz-foot" style="flex-direction:column"><button class="btn soft" id="i-cont">' + L('Ituloy dito sa Safari', 'Continue here in Safari') + '</button></div>';
+        ptr && ptr.remove();
+        el.querySelector('#i-cont').onclick = finish;
+      } else finish();
+    };
+    el.querySelector('#i-later').onclick = () => { if (!manual) LS.set(K('instLater'), Date.now() + 3 * 86400000); finish(); };
+  });
+}
+
+/* ---------- setup wizard (one question at a time) ---------- */
+function setupWizard() {
+  return new Promise(resolve => {
+    const A = { lang: LANG, storeName: '', ownerName: '', pin: '', currency: 'PHP', methods: ['cash'], lowDefault: 5 };
+    const el = screen('');
+    let i = 0;
+    const steps = [
+      { q: () => 'Meow! 👋 Ako si Muffin.<small>Hello! I\'m Muffin, your cashier cat. Pumili ng wika / Choose a language:</small>', m: 'hello',
+        body: () => opt('lang', [['tl', '🇵🇭', 'Tagalog', 'Simpleng Tagalog'], ['en', '🇬🇧', 'English', 'Simple English']]), auto: true },
+      { q: () => L('Ano ang pangalan ng tindahan mo?', "What's your store's name?") + '<small>' + L('hal. Aling Nena Sari-Sari Store', 'e.g. Aling Nena Sari-Sari Store') + '</small>', m: 'cart',
+        body: () => '<input class="wz-input" id="wv" value="' + esc(A.storeName) + '" placeholder="' + L('Pangalan ng tindahan', 'Store name') + '">', get: v => (A.storeName = v.trim()) || null },
+      { q: () => L('Ano ang pangalan mo, Bossing?', "What's your name, Boss?") + '<small>' + L('Para alam kung sino ang nagbenta.', 'So we know who made each sale.') + '</small>', m: 'hello',
+        body: () => '<input class="wz-input" id="wv" value="' + esc(A.ownerName) + '" placeholder="' + L('Pangalan mo', 'Your name') + '">', get: v => (A.ownerName = v.trim()) || null },
+      { q: () => L('Gumawa ng 4-digit Owner PIN', 'Create a 4-digit Owner PIN') + '<small>' + L('Para ikaw lang ang makakita ng Ulat at makapagpalit ng settings. Tandaan mo ito!', 'So only you can see Reports and change settings. Remember it!') + '</small>', m: 'think',
+        body: () => '<input class="wz-input" id="wv" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" value="' + esc(A.pin) + '" placeholder="• • • •" style="letter-spacing:14px">', get: v => { v = String(v).replace(/\D/g, ''); if (v.length !== 4) return null; A.pin = v; return 1; } },
+      { q: () => L('Anong pera ang gamit mo?', 'Which currency do you use?'), m: 'hello',
+        body: () => opt('currency', Object.keys(CURRENCIES).map(k => [k, CURRENCIES[k].f, CURRENCIES[k][LANG] + ' (' + CURRENCIES[k].sym + ')', k])), auto: true },
+      { q: () => L('Paano nagbabayad ang customers?', 'How do customers pay?') + '<small>' + L('Pwedeng pumili ng marami.', 'You can pick more than one.') + '</small>', m: 'hello',
+        body: () => opt('methods', Object.keys(METHODS).map(k => [k, METHODS[k][0], METHODS[k][1], '']), true), get: () => A.methods.length ? 1 : null },
+      { q: () => L('Kailan kita aabisuhan na paubos na?', 'When should I warn you about low stock?') + '<small>' + L('Kapag ganito na lang ang natitira. Pwedeng iba-iba bawat paninda.', 'When this many are left. Can be different per item.') + '</small>', m: 'worried',
+        body: () => opt('lowDefault', [[3, '3️⃣', L('3 na lang', '3 left'), ''], [5, '5️⃣', L('5 na lang', '5 left'), L('Karaniwan', 'Most common')], [10, '🔟', L('10 na lang', '10 left'), ''], [0, '⛔', L('Kapag ubos na', 'When it runs out'), '']]), auto: true },
+      { q: () => L('Ayos! Handa na ang Puscart mo! 🎉', 'All set! Your Puscart is ready! 🎉') + '<small>' + esc(A.storeName) + '</small>', m: 'cheer',
+        body: () => '<div class="card b" style="text-align:center;line-height:1.5">' + L('Una, idagdag ang mga paninda mo sa <b>📦 Paninda</b> — i-scan lang ang barcode! Tapos, sa <b>🛒 Benta</b>, scan → Bayad → tapos. Pindot. Benta. Meow! 🐱', 'First, add your items in <b>📦 Items</b> — just scan the barcode! Then on <b>🛒 Sell</b>: scan → Pay → done. Tap. Sell. Meow! 🐱') + '</div>', final: true }
+    ];
+    function opt(key, list, multi) {
+      return '<div class="opts">' + list.map(o => {
+        const sel = multi ? A[key].includes(o[0]) : A[key] === o[0];
+        return '<button class="opt ' + (sel ? 'sel' : '') + '" data-k="' + key + '" data-v=\'' + JSON.stringify(o[0]) + '\'' + (multi ? ' data-multi="1"' : '') + '><span class="e">' + o[1] + '</span><span>' + esc(o[2]) + (o[3] ? '<small>' + esc(o[3]) + '</small>' : '') + '</span></button>';
+      }).join('') + '</div>';
+    }
+    function paint() {
+      const s = steps[i];
+      el.querySelector('.inner').innerHTML =
+        '<div class="wz-top"><button class="iconbtn ' + (i ? '' : 'hidden') + '" id="wb">←</button><div class="dots">' + steps.map((_, j) => '<i class="' + (j === i ? 'on' : '') + '"></i>').join('') + '</div><div style="width:40px"></div></div>' +
+        '<div class="wz-m">' + mascot(s.m, 'hop') + '</div><div class="wz-q">' + s.q() + '</div>' + s.body() +
+        '<div class="wz-foot">' + (s.auto ? '' : '<button class="btn ' + (s.final ? 'pink' : 'main') + '" id="wn">' + (s.final ? L('Simulan na! 🚀', "Let's go! 🚀") : L('Sunod →', 'Next →')) + '</button>') + '</div>';
+      const inp = el.querySelector('#wv');
+      if (inp) { setTimeout(() => inp.focus(), 200); inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') next(); }); }
+      el.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+        const k = b.dataset.k, v = JSON.parse(b.dataset.v);
+        if (b.dataset.multi) { const a = A[k]; const j = a.indexOf(v); if (j >= 0) a.splice(j, 1); else a.push(v); b.classList.toggle('sel'); return; }
+        A[k] = v;
+        if (k === 'lang') { LANG = v; LS.set(K('lang'), v); }
+        el.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+        setTimeout(next, 180);
+      });
+      const wb = el.querySelector('#wb'); if (wb) wb.onclick = () => { i--; paint(); };
+      const wn = el.querySelector('#wn'); if (wn) wn.onclick = next;
+    }
+    async function next() {
+      const s = steps[i];
+      if (s.get) {
+        const inp = el.querySelector('#wv');
+        if (!s.get(inp ? inp.value : '')) { const t = el.querySelector('.wz-input,.opts'); if (t) { t.style.outline = '3px solid var(--rosas)'; t.style.borderRadius = '20px'; } return; }
+      }
+      if (!s.final) { i++; paint(); return; }
+      let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { }
+      const settings = { lang: A.lang, storeName: A.storeName, ownerName: A.ownerName, currency: A.currency, methods: A.methods, lowDefault: A.lowDefault, sound: true, tz };
+      const btn = el.querySelector('#wn'); btn.disabled = true; btn.textContent = L('Sine-save…', 'Saving…');
+      try {
+        const h = await pinHash(A.pin);
+        LS.set(K('pin'), h);
+        const j = await api('setup', { settings, by: A.ownerName, pinHash: h });
+        applyServer(j); await saveCache();
+        LS.set(K('name'), A.ownerName); LS.set(K('owner'), true);
+        el.remove(); resolve();
+      } catch (e) {
+        btn.disabled = false; btn.textContent = L('Subukan ulit', 'Try again');
+        toast(L('Kailangan ng internet para i-save. Subukan ulit.', 'Need internet to save. Please try again.'), 'sad');
+      }
+    }
+    paint();
+  });
+}
+
+/* ---------- "Who are you?" (once per phone) ---------- */
+function askName(change) {
+  return new Promise(resolve => {
+    const el = screen(
+      '<div class="wz-m">' + mascot('wave', 'hop') + '</div><div class="wz-q">' + L('Meow! Sino ka? 👋', 'Meow! Who are you? 👋') +
+      '<small>' + L('Para makita kung sino ang nagbenta o nagbago ng presyo.', 'So everyone can see who sold or changed prices.') + '</small></div>' +
+      '<input class="wz-input" id="nm" value="' + esc(change ? myName() : '') + '" placeholder="' + L('Pangalan mo (hal. Joy)', 'Your name (e.g. Joy)') + '">' +
+      '<div class="chips" style="justify-content:center;margin-top:12px">' + ['Owner', 'Staff', 'Cashier'].map(x => '<button class="chip" data-n="' + x + '">' + x + '</button>').join('') + '</div>' +
+      '<div class="wz-foot"><button class="btn main" id="nm-ok">' + L('Sige, tuloy! →', 'Continue →') + '</button></div>');
+    const i = el.querySelector('#nm'); setTimeout(() => i.focus(), 200);
+    el.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { i.value = i.value ? i.value.replace(/ \((Owner|Staff|Cashier)\)$/, '') + ' (' + b.dataset.n + ')' : b.dataset.n; i.focus(); });
+    const ok = () => { const v = i.value.trim(); if (!v) { i.style.borderColor = 'var(--rosas)'; return; } LS.set(K('name'), v); carryParams(); el.remove(); resolve(); };
+    el.querySelector('#nm-ok').onclick = ok;
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') ok(); });
+  });
+}
+
+/* ---------- guided tour: only the highlighted part can be tapped ---------- */
+let tourActive = false;
+function tourSteps(kind) {
+  const full = [
+    { sel: '#scanBar', tl: 'Dito ang <b>search</b>. I-type ang pangalan o barcode ng paninda. Kung may Bluetooth scanner ka, mag-scan lang kahit saan!', en: 'This is <b>search</b>. Type an item name or barcode. With a Bluetooth scanner, just scan anytime!' },
+    { sel: '#camBtn', tl: 'Pindutin ang <b>📷</b> para mag-scan gamit ang camera. Tuloy-tuloy kang makaka-scan!', en: 'Tap <b>📷</b> to scan with the camera. You can scan item after item!' },
+    { sel: '#quickGrid', tl: 'Mabilis na pindot para sa walang barcode (yelo, itlog) at ang <b>＋ Iba pa</b> para presyo lang.', en: 'Quick buttons for things without a barcode (ice, eggs) and <b>＋ Other</b> for just a price.' },
+    { sel: '#cartBox', tl: 'Dito lalabas ang <b>cart</b>. Pindutin ang ＋ / − para sa dami.', en: 'The <b>cart</b> shows here. Tap ＋ / − to change quantity.' },
+    { sel: '#payBar', tl: 'Ang <b>kabuuan</b>. Pindutin ang <b>Bayad →</b> at ako na ang magkukuwenta ng sukli! 🐱', en: 'The <b>total</b>. Tap <b>Pay →</b> and I\'ll work out the change! 🐱' },
+    { sel: '#nav-items', tl: 'Sa <b>Paninda</b>: magdagdag ng paninda (i-scan ang barcode), tingnan ang stock, at ilista ang dumating na delivery.', en: '<b>Items</b>: add items (scan the barcode), see stock, and record deliveries.' },
+    { sel: '#nav-sales', tl: 'Sa <b>Listahan</b> makikita lahat ng benta at resibo.', en: '<b>Sales</b> shows every sale and receipt.' },
+    { sel: '#nav-report', tl: 'Sa <b>Ulat</b>: kita, tubo, pinakamabenta, at paubos na. Ikaw lang ang nakakakita nito.', en: '<b>Reports</b>: sales, profit, best sellers and low stock. Only you can see this.', skipIf: () => !isOwner() },
+    { sel: '#nav-help', tl: 'May tanong? Pindutin ang <b>Tulong</b>.', en: 'Questions? Tap <b>Help</b>.', skipIf: () => isOwner() },
+    { sel: '#syncBadge', tl: 'Kahit walang internet, tuloy ang benta. Kusa itong magsi-sync mamaya.', en: 'No internet? Keep selling. It syncs by itself later.' },
+    { sel: '#btn-bell', tl: '🔔 Dito ka aabisuhan kapag nagpalit ng presyo, nag-void, o nag-ayos ng stock ang staff.', en: '🔔 You get notified here when staff change prices, void sales, or fix stock.', skipIf: () => !isOwner() },
+    { sel: '#btn-settings', tl: 'Sa Settings: wika, paraan ng bayad, scanner test, o <b>ulitin ang tutorial</b>.', en: 'Settings: language, payment methods, scanner test, or <b>replay this tutorial</b>.' }
+  ];
+  if (kind === 'full') return full;
+  return full.filter(s => ['#scanBar', '#camBtn', '#cartBox', '#payBar', '#nav-items', '#nav-help'].includes(s.sel));
+}
+function runTour(kind) {
+  return new Promise(resolve => {
+    const steps = tourSteps(kind).filter(s => !(s.skipIf && s.skipIf()));
+    let i = 0, target = null;
+    tourActive = true;
+    const blks = [0, 1, 2, 3, 4].map(() => { const b = document.createElement('div'); b.className = 'blk'; document.body.appendChild(b); return b; });
+    const ring = document.createElement('div'); ring.className = 'ring';
+    const coach = document.createElement('div'); coach.className = 'coach';
+    document.body.append(ring, coach);
+    const blockTap = ev => { ev.preventDefault(); ev.stopPropagation(); };
+    blks.forEach(b => { b.addEventListener('click', blockTap, true); b.addEventListener('touchstart', blockTap, { passive: false }); });
+    const end = () => {
+      tourActive = false;
+      blks.forEach(b => b.remove()); ring.remove(); coach.remove();
+      window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true);
+      LS.set(K('tour'), true); carryParams();
+      toast(L('Handa ka na, Bossing! Pindot. Benta. Meow! 🎉', "You're all set! Tap. Sell. Meow! 🎉"), 'cheer');
+      resolve();
+    };
+    function place() {
+      if (!target) return;
+      const r = target.getBoundingClientRect(), p = 6;
+      const x = Math.max(0, r.left - p), y = Math.max(0, r.top - p), w = Math.min(innerWidth, r.width + p * 2), h = r.height + p * 2;
+      const vw = innerWidth, vh = innerHeight;
+      Object.assign(ring.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+      Object.assign(blks[0].style, { left: 0, top: 0, width: vw + 'px', height: y + 'px' });
+      Object.assign(blks[1].style, { left: 0, top: (y + h) + 'px', width: vw + 'px', height: Math.max(0, vh - y - h) + 'px' });
+      Object.assign(blks[2].style, { left: 0, top: y + 'px', width: x + 'px', height: h + 'px' });
+      Object.assign(blks[3].style, { left: (x + w) + 'px', top: y + 'px', width: Math.max(0, vw - x - w) + 'px', height: h + 'px' });
+      Object.assign(blks[4].style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+      const ch = coach.offsetHeight || 120;
+      const above = y - ch - 16 > 10, below = y + h + 16 + ch < vh - 10;
+      let top;
+      if (y + h / 2 > vh / 2 && above) top = y - ch - 16; else if (below) top = y + h + 16; else top = Math.max(10, y - ch - 16);
+      coach.style.top = Math.max(10, Math.min(top, vh - ch - 10)) + 'px';
+    }
+    function show() {
+      if (i >= steps.length) return end();
+      const s = steps[i];
+      let tries = 0;
+      const find = () => {
+        target = document.querySelector(s.sel);
+        if (!target || (target.offsetParent === null && getComputedStyle(target).position !== 'fixed')) {
+          if (tries++ < 15) return setTimeout(find, 80);
+          i++; return show();
+        }
+        const r = target.getBoundingClientRect();
+        if (r.top < 70 || r.bottom > innerHeight - 90) target.scrollIntoView({ block: 'center', behavior: 'instant' });
+        coach.innerHTML = '<div class="m">' + mascot('hello') + '</div><div style="flex:1"><div class="stepn">' + (i + 1) + ' / ' + steps.length + '</div><div class="txt">' + s[LANG] + '</div><div class="act">' +
+          '<button class="go">' + (i === steps.length - 1 ? L('Tapos! 🎉', 'Done! 🎉') : L('Sige →', 'Next →')) + '</button><button class="skip">' + L('Laktawan', 'Skip') + '</button></div></div>';
+        coach.querySelector('.go').onclick = () => { i++; show(); };
+        coach.querySelector('.skip').onclick = end;
+        requestAnimationFrame(place); setTimeout(place, 250);
+      };
+      find();
+    }
+    window.addEventListener('resize', place); window.addEventListener('scroll', place, true);
+    show();
+  });
+}
+
+/* ---------- gates: wrong link / ended / need internet ---------- */
+let gateEl = null;
+function gate(mood, title, msg, btn) {
+  if (gateEl) gateEl.remove();
+  gateEl = screen('<div style="flex:1"></div><div class="wz-m">' + mascot(mood) + '</div><div class="wz-q">' + title + '<small>' + msg + '</small></div>' + (btn ? '<button class="btn main" id="g-btn">' + btn + '</button>' : '') + '<div style="flex:1"></div>');
+  gateEl.style.zIndex = 150;
+  const b = gateEl.querySelector('#g-btn'); if (b) b.onclick = () => location.reload();
+}
+function gateCheck() {
+  if (!S.sub) return false;
+  if (S.sub.state === 'invalid') { gate('sad', L('Hindi gumagana ang link na ito', "This link doesn't work"), L('Baka luma na ang link. Humingi ng bagong Puscart link sa owner ng tindahan.', 'It may be an old link. Ask the store owner for the new Puscart link.')); return true; }
+  if (S.sub.state === 'expired') { gate('sad', L('Naka-pause ang Puscart mo', 'Your Puscart is paused'), L('Tapos na ang trial o subscription. Ligtas ang lahat ng benta at paninda mo! 💗<br><br>', 'Your trial or subscription has ended. All your sales and items are safe! 💗<br><br>') + esc(S.support), L('Subukan ulit', 'Check again')); return true; }
+  if (gateEl) { gateEl.remove(); gateEl = null; }
+  return false;
+}
+
+/* =================================================================
+   BOOT
+   ================================================================= */
+async function boot() {
+  const hideSplash = () => { const sp = $('#splash'); if (sp) { sp.style.opacity = 0; setTimeout(() => sp.remove(), 200); } };
+  if (DEMO) $('#demoChip').classList.remove('hidden');
+  if (!CODE) { hideSplash(); gate('think', L('Kailangan ang link mo', 'You need your personal link'), L('Buksan ang Puscart gamit ang link na ibinigay sa iyo.', 'Open Puscart using the link you were given.')); return; }
+  readCarried();
+  const hadCache = await loadCache();
+  if (S.settings && !LS.get(K('lang'), null) && S.settings.lang) LANG = S.settings.lang;
+  document.documentElement.lang = LANG === 'tl' ? 'tl' : 'en';
+  if (hadCache && S.settings) { showApp(); hideSplash(); }
+  let fresh = false;
+  if (navigator.onLine || DEMO) {
+    try {
+      const sending = S.ops.slice();
+      const j = sending.length ? await api('sync', { ops: sending, pin: pinKey() }) : await api('init', { pin: pinKey() });
+      if (sending.length) { const sent = new Set(sending.map(o => o.uid)); S.ops = S.ops.filter(o => !sent.has(o.uid)); DB.set(K('ops'), S.ops); }
+      applyServer(j); await saveCache(); fresh = true;
+    } catch (e) { console.warn(e); }
+  }
+  if (S.settings && !LS.get(K('lang'), null) && S.settings.lang) LANG = S.settings.lang;
+  hideSplash();
+  if (gateCheck()) return;
+  if (!S.settings && !fresh) { gate('think', L('Kailangan ng internet', 'Internet needed'), L('Sa unang bukas, kailangan ng internet. Pagkatapos nito, gagana na kahit offline!', 'The very first time needs internet. After that it works offline too!'), L('Subukan ulit', 'Try again')); return; }
+  if (!fresh && S.lastOk && Date.now() - S.lastOk > S.grace * 86400000) { gate('think', L('Kumonekta sa internet', 'Please connect to the internet'), L('Matagal ka nang offline. Kumonekta saglit para ma-sync ang benta.', "You've been offline a long time. Connect briefly to sync your sales."), L('Subukan ulit', 'Try again')); return; }
+  if (needInstallGuide()) await installGuide(false);
+  if (!S.settings) await setupWizard();
+  if (!myName()) await askName(false);
+  carryParams();
+  if (S.pinSet === false && isOwnerDevice() && (navigator.onLine || DEMO)) { showApp(); await createPinFlow(true); }
+  showApp();
+  if (!LS.get(K('tour'), false)) { go('sell'); await new Promise(r => setTimeout(r, 300)); await runTour(isOwner() || isOwnerDevice() ? 'full' : 'short'); }
+  flush(); loadLog();
+}
+let appShown = false;
+function showApp() {
+  $('#app').classList.remove('hidden'); $('#nav').classList.remove('hidden');
+  if (!appShown) {
+    appShown = true;
+    $$('.nav button[data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
+    $('#btn-settings').onclick = () => go('settings');
+    $('#btn-bell').onclick = () => { go('alerts'); loadLog(); };
+    $('#syncBadge').onclick = () => flush(true);
+    $('#pb-pay').onclick = () => openPay();
+    $('#pb-clear').onclick = async () => { if (await confirmSheet('🗑️ ' + L('Alisin lahat?', 'Clear the cart?'), L('Aalisin ang lahat ng nasa cart.', 'Everything in the cart will be removed.'), L('Alisin', 'Clear'), true)) { S.cart = []; saveCart(); renderCart(); } };
+  }
+  go(S.view || 'sell');
+}
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('sw.js').catch(() => { });
+}
+boot();
+</script>
+</body>
+</html>
