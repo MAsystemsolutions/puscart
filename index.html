@@ -345,7 +345,7 @@ h3{font-size:15px;margin:16px 2px 8px;font-weight:900}
 const API_URL = 'https://script.google.com/macros/s/AKfycbyStbnjma9PcSq1b2zzknErr40PPbMFu1XoL8XHs0x_FH-dmKMXGtwgmAlHIMa4oLOQ0Q/exec';
 // =================================================================
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const qs = new URLSearchParams(location.search);
 // Puscart and Kwentoink live on the same website, so everything here uses the "pc_" prefix
 const CODE = (() => {
@@ -1581,6 +1581,68 @@ async function openScanner(onCode, opts) {
 })();
 
 /* =================================================================
+   KASUNDUAN (Terms of Use + Data Privacy) — must agree before using
+   ================================================================= */
+const TERMS_V = 1;
+const TERMS_DATE = 'Oktubre 2026';
+function termsHtml() {
+  const contact = esc(S.support || 'MA System Solutions');
+  const T = LANG === 'tl' ? [
+    ['📱 Ano ang Puscart', 'Ang Puscart ay app para sa pagbebenta at pagbilang ng paninda. Ito ay ibinibigay ng <b>MA System Solutions</b> sa mga tindahang naka-subscribe.'],
+    ['📝 Anong impormasyon ang kinukuha namin', 'Pangalan ng tindahan, pangalan ng owner at staff, email (kung ilalagay mo), mga paninda, presyo, puhunan, benta, at stock. <b>Hindi namin kailangan</b> ang ID, address, o personal na impormasyon ng mga customer mo.'],
+    ['📷 Camera', 'Ginagamit lang ang camera para basahin ang barcode, dito mismo sa phone. <b>Walang litrato o video na sine-save o ipinapadala.</b>'],
+    ['🔒 Saan naka-save ang data', 'Sa phone mo, at sa secure na Google Sheets na pinamamahalaan ng MA System Solutions. Ang mga may link ng tindahan mo (ikaw at ang staff mo) lang ang nakakakita ng data ng tindahan.'],
+    ['🤝 Paano namin ginagamit ang data', 'Para lang patakbuhin ang app: pag-sync sa iba\'t ibang phone, mga ulat, at pagtulong kapag may problema. <b>Hindi namin ibinebenta o ibinibigay ang data mo sa iba.</b> Kung naka-connect ka sa Kwentoink, ang kabuuang benta kada araw ay ipinapadala doon.'],
+    ['⚖️ Ang karapatan mo', 'Ayon sa <b>Data Privacy Act of 2012 (RA 10173)</b>, pwede kang humingi ng kopya ng data mo, ipaayos ito, o ipabura ito kapag tumigil ka na sa paggamit.'],
+    ['🙋 Ang responsibilidad mo', 'Ingatan ang link at ang Owner PIN. Huwag ibigay sa hindi mo pinagkakatiwalaan. Ikaw ang responsable sa tamang paglista ng benta at presyo, at sa paggamit ng staff mo sa app. Huwag gamitin ang app sa ilegal na gawain.'],
+    ['⭐ Subscription', 'May libreng trial. Pagkatapos nito, kailangan ng bayad para tuloy-tuloy ang paggamit. Kapag natapos o na-pause, <b>ligtas pa rin ang data mo</b> at pwede kang humingi ng kopya.'],
+    ['⚠️ Limitasyon', 'Tulong lang ang Puscart sa pagbilang. I-check pa rin ang pera at stock mo. Hindi mananagot ang MA System Solutions sa pagkawala dahil sa maling lista, nawalang phone, o problema sa internet o sa Google.'],
+    ['🔄 Pagbabago', 'Maaaring i-update ang kasunduang ito. Kapag may malaking pagbabago, hihingin ulit ang pagsang-ayon mo.'],
+    ['📞 Contact', contact]
+  ] : [
+    ['📱 What Puscart is', 'Puscart is an app for selling and counting stock. It is provided by <b>MA System Solutions</b> to subscribed stores.'],
+    ['📝 What we collect', 'Store name, owner and staff names, email (if you add one), items, prices, costs, sales and stock. <b>We do not need</b> IDs, addresses, or your customers\' personal information.'],
+    ['📷 Camera', 'The camera is only used to read barcodes, right here on the phone. <b>No photos or videos are saved or sent.</b>'],
+    ['🔒 Where data is kept', 'On your phone, and in secure Google Sheets managed by MA System Solutions. Only people with your store link (you and your staff) can see your store\'s data.'],
+    ['🤝 How we use data', 'Only to run the app: syncing phones, reports, and helping when there is a problem. <b>We never sell or give your data to others.</b> If you connect Kwentoink, each day\'s sales total is sent there.'],
+    ['⚖️ Your rights', 'Under the <b>Data Privacy Act of 2012 (RA 10173)</b>, you may ask for a copy of your data, ask us to correct it, or ask us to delete it when you stop using the app.'],
+    ['🙋 Your responsibility', 'Keep your link and Owner PIN private. You are responsible for recording sales and prices correctly, and for how your staff use the app. Do not use the app for anything illegal.'],
+    ['⭐ Subscription', 'There is a free trial. After that, payment is needed to keep using it. If it ends or is paused, <b>your data stays safe</b> and you can ask for a copy.'],
+    ['⚠️ Limits', 'Puscart helps you count; still check your cash and stock. MA System Solutions is not liable for losses from wrong entries, lost phones, or internet/Google problems.'],
+    ['🔄 Changes', 'These terms may be updated. For big changes, we will ask you to agree again.'],
+    ['📞 Contact', contact]
+  ];
+  return T.map(t => '<div style="margin-bottom:12px"><div class="b" style="margin-bottom:3px">' + t[0] + '</div><div style="font-weight:600;line-height:1.45;font-size:14px;color:var(--ink2)">' + t[1] + '</div></div>').join('') +
+    '<div class="small muted b">' + L('Huling update: ', 'Last updated: ') + TERMS_DATE + ' · v' + TERMS_V + '</div>';
+}
+const termsOk = () => LS.get(K('terms'), 0) >= TERMS_V;
+function termsGate() {
+  return new Promise(resolve => {
+    const el = screen('');
+    const paint = () => {
+      el.querySelector('.inner').innerHTML =
+        '<div class="seg" style="align-self:center;margin:0 0 6px;padding:3px"><button style="padding:8px 14px" class="' + (LANG === 'tl' ? 'on' : '') + '" data-l="tl">Tagalog</button><button style="padding:8px 14px" class="' + (LANG === 'en' ? 'on' : '') + '" data-l="en">English</button></div>' +
+        '<div class="wz-m" style="width:110px">' + mascot('hello', 'hop') + '</div>' +
+        '<div class="wz-q">' + L('Bago tayo magsimula 📄', 'Before we start 📄') + '<small>' + L('Basahin muna ang kasunduan at Data Privacy. Para ito sa proteksyon mo at ng tindahan mo.', 'Please read the terms and data privacy notice. This protects you and your store.') + '</small></div>' +
+        '<div class="card" style="max-height:44vh;overflow-y:auto;-webkit-overflow-scrolling:touch">' + termsHtml() + '</div>' +
+        '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:800;line-height:1.35;margin:4px 2px 0;cursor:pointer"><input type="checkbox" id="t-ok" style="width:24px;height:24px;flex:none;accent-color:#d94c6e;margin-top:1px"><span>' + L('Nabasa ko at sumasang-ayon ako sa Kasunduan sa Paggamit at sa Data Privacy ng Puscart.', 'I have read and agree to the Puscart Terms of Use and Data Privacy notice.') + '</span></label>' +
+        '<div class="wz-foot"><button class="btn pink" id="t-go" disabled>' + L('Sumasang-ayon ako →', 'I agree →') + '</button></div>';
+      const cb = el.querySelector('#t-ok'), go = el.querySelector('#t-go');
+      cb.onchange = () => { go.disabled = !cb.checked; };
+      go.onclick = () => { if (!cb.checked) return; LS.set(K('terms'), TERMS_V); LS.set(K('termsAt'), nowIso()); carryParams(); el.remove(); resolve(); };
+      el.querySelectorAll('[data-l]').forEach(b => b.onclick = () => { LANG = b.dataset.l; LS.set(K('lang'), LANG); document.documentElement.lang = LANG === 'tl' ? 'tl' : 'en'; paint(); });
+    };
+    paint();
+  });
+}
+function showTerms() {
+  const at = LS.get(K('termsAt'), '');
+  const el = openSheet('<div class="sheet-head"><h2>📄 ' + L('Kasunduan at Privacy', 'Terms & Privacy') + '</h2><button class="x" data-x>×</button></div>' +
+    '<div class="card">' + termsHtml() + '</div>' + (at ? '<div class="small b muted" style="text-align:center">✅ ' + L('Sumang-ayon ka noong ', 'You agreed on ') + prettyDate(ymd(new Date(at))) + '</div>' : ''));
+  el.querySelector('[data-x]').onclick = () => closeSheet();
+}
+
+/* =================================================================
    SETTINGS, ALERTS, LOG
    ================================================================= */
 function viewSettings() {
@@ -1615,6 +1677,7 @@ function viewSettings() {
   h += '<div class="card"><div class="set"><div>🔗 Kwentoink<div class="muted">' + (s.kwLinked ? L('Naka-link — ang benta kada araw ay pumapasok sa Kwentoink', 'Linked — daily sales go into Kwentoink') : L('Hindi naka-link', 'Not linked')) + '</div></div><span>' + (s.kwLinked ? '✅' : '—') + '</span></div>' +
     '<div class="set"><div>❓ ' + L('Tanong kay Muffin (tulong)', 'Ask Muffin (help)') + '</div><button class="lnk" data-act="go" data-arg="help">' + L('Buksan', 'Open') + '</button></div>' +
     '<div class="set"><div>📜 ' + L('Kasaysayan ng pagbabago', 'Activity log') + '</div><button class="lnk" data-act="go" data-arg="log">' + L('Tingnan', 'Open') + '</button></div>' +
+    '<div class="set"><div>📄 ' + L('Kasunduan at Data Privacy', 'Terms & Data Privacy') + '</div><button class="lnk" data-act="terms">' + L('Basahin', 'Read') + '</button></div>' +
     '<div class="set"><div>🎓 ' + L('Ulitin ang tutorial', 'Replay tutorial') + '</div><button class="lnk" data-act="replayTour">' + L('Simulan', 'Start') + '</button></div>' +
     (isStandalone() ? '' : '<div class="set"><div>📲 ' + L('I-add sa Home Screen', 'Add to Home Screen') + '</div><button class="lnk" data-act="showInstall">' + L('Paano?', 'How?') + '</button></div>') +
     '<div class="set"><div>🔄 Sync<div class="muted">' + (S.lastOk ? L('Huling sync: ', 'Last sync: ') + timeAgo(new Date(S.lastOk).toISOString()) : '—') + '</div></div><button class="lnk" data-act="syncNow">' + L('I-sync ngayon', 'Sync now') + '</button></div>' +
@@ -1714,6 +1777,7 @@ const ACTIONS = {
   editCur: () => pickSheet('Currency', Object.keys(CURRENCIES).map(k => ({ v: k, label: CURRENCIES[k].f + ' ' + CURRENCIES[k][LANG] + ' (' + CURRENCIES[k].sym + ')' })), cur()).then(v => { if (v) { _nf = {}; saveSettings({ currency: v }, 'Currency: ' + v); } }),
   editLow: () => promptSheet(L('Abisuhan kapag ilan na lang?', 'Warn when how many are left?'), lowDefault(), 'num').then(v => { if (v !== null && v !== '') saveSettings({ lowDefault: num(v) }, L('Abiso sa paubos: ', 'Low-stock alert: ') + num(v)); }),
   toggleMethod: k => { const m = (S.settings.methods || ['cash']).slice(); const i = m.indexOf(k); if (i >= 0) { if (m.length === 1) return; m.splice(i, 1); } else m.push(k); saveSettings({ methods: m }, METHODS[k][1]); },
+  terms: () => showTerms(),
   replayTour: () => { go('sell'); setTimeout(() => runTour(isOwner() || isOwnerDevice() ? 'full' : 'short'), 300); },
   showInstall: () => installGuide(true),
   syncNow: () => { flush(true); loadLog(); toast(L('Nagsi-sync…', 'Syncing…'), 'happy'); },
@@ -1792,12 +1856,14 @@ function carryParams() {
   if (LS.get(K('tour'), false)) p.set('t', '1');
   if (isOwnerDevice()) p.set('o', '1');
   if (LS.get(K('lang'), null)) p.set('l', LANG);
+  if (termsOk()) p.set('a', String(TERMS_V));
   try { history.replaceState(null, '', location.pathname + '?' + p.toString()); } catch (e) { }
 }
 function readCarried() {
   if (!isStandalone()) return;
   if (qs.get('n') && !LS.get(K('name'), '')) LS.set(K('name'), qs.get('n'));
   if (qs.get('t') === '1') LS.set(K('tour'), true);
+  if (+qs.get('a') >= TERMS_V && !termsOk()) { LS.set(K('terms'), +qs.get('a')); LS.set(K('termsAt'), nowIso()); }
   if (qs.get('o') === '1') LS.set(K('owner'), true);
   if (qs.get('l') && !LS.get(K('lang'), null)) { LS.set(K('lang'), qs.get('l')); LANG = qs.get('l'); }
   if (LS.get(K('name'), '')) LS.set(K('inst'), true);
@@ -1940,7 +2006,7 @@ function setupWizard() {
       }
       if (!s.final) { i++; paint(); return; }
       let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { }
-      const settings = { lang: A.lang, storeName: A.storeName, ownerName: A.ownerName, currency: A.currency, methods: A.methods, lowDefault: A.lowDefault, sound: true, tz };
+      const settings = { lang: A.lang, storeName: A.storeName, ownerName: A.ownerName, currency: A.currency, methods: A.methods, lowDefault: A.lowDefault, sound: true, tz, termsVersion: TERMS_V, termsAgreedAt: LS.get(K('termsAt'), nowIso()), termsAgreedBy: A.ownerName };
       const btn = el.querySelector('#wn'); btn.disabled = true; btn.textContent = L('Sine-save…', 'Saving…');
       try {
         const h = await pinHash(A.pin);
@@ -2098,6 +2164,7 @@ async function boot() {
   if (gateCheck()) return;
   if (!S.settings && !fresh) { gate('think', L('Kailangan ng internet', 'Internet needed'), L('Sa unang bukas, kailangan ng internet. Pagkatapos nito, gagana na kahit offline!', 'The very first time needs internet. After that it works offline too!'), L('Subukan ulit', 'Try again')); return; }
   if (!fresh && S.lastOk && Date.now() - S.lastOk > S.grace * 86400000) { gate('think', L('Kumonekta sa internet', 'Please connect to the internet'), L('Matagal ka nang offline. Kumonekta saglit para ma-sync ang benta.', "You've been offline a long time. Connect briefly to sync your sales."), L('Subukan ulit', 'Try again')); return; }
+  if (!termsOk()) await termsGate();
   if (needInstallGuide()) await installGuide(false);
   if (!S.settings) await setupWizard();
   if (!myName()) await askName(false);
