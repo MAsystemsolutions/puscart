@@ -212,6 +212,25 @@ h3{font-size:15px;margin:16px 2px 8px;font-weight:900}
 .dots i{width:8px;height:8px;border-radius:9px;background:#fff;opacity:.85}
 .dots i.on{background:var(--rosas);width:22px}
 .wz-m{width:140px;margin:6px auto 0}
+/* ---- renewal lock screen + reminder bar ---- */
+.pl-head{display:flex;align-items:center;gap:12px;margin:4px 0 12px}
+.pl-head .pl-m{width:84px;flex:0 0 84px}
+.pl-head b{display:block;font-size:20px;line-height:1.25}.pl-head small{display:block;color:var(--muted);font-weight:700;font-size:14px;margin-top:4px}
+.pl-qr{display:block;width:100%;max-width:260px;margin:0 auto 8px;border-radius:16px}
+.pl-amt{text-align:center;font-weight:900;font-size:30px;color:var(--rosas)}
+.pl-amt small{display:block;font-size:13px;color:var(--muted);font-weight:800}
+.pl-steps{font-size:14px;font-weight:700;line-height:1.55;color:var(--ink2)}
+.pl-row{display:flex;gap:8px;margin-top:10px}.pl-row .btn{font-size:15px;padding:12px;text-decoration:none;color:var(--ink)}
+.pl-seg{display:flex;background:var(--bg2);border-radius:14px;padding:4px;gap:4px;margin:10px 0}
+.pl-seg button{flex:1;padding:10px 6px;border-radius:11px;font-weight:900}.pl-seg button.on{background:var(--rosas);color:#fff}
+.pl-box{border-radius:16px;padding:12px 14px;font-weight:800;font-size:14px;line-height:1.45;margin-bottom:12px}
+.pl-box.wait{background:var(--teal2);color:var(--tealD)}.pl-box.bad{background:var(--red2);color:var(--red)}
+.pl-file{display:block;border:2px dashed var(--blush);border-radius:15px;padding:14px;text-align:center;font-weight:800;color:var(--ink2);background:var(--white);cursor:pointer}
+.pl-file img{display:block;max-height:160px;margin:8px auto 0;border-radius:10px}
+.pl-link{display:block;margin:4px auto 12px;font-weight:800;color:var(--muted);text-decoration:underline;background:none}
+.renew-bar{display:flex;align-items:center;gap:8px;margin:0 14px 8px;padding:10px 12px;border-radius:16px;background:var(--gold2);font-weight:800;font-size:13px;box-shadow:var(--shadow)}
+.renew-bar span{flex:1}.renew-bar button{font-weight:900;border-radius:11px;padding:7px 10px;background:var(--rosas);color:#fff}
+.renew-bar button.x{background:none;color:var(--muted);padding:4px 6px;font-size:18px}
 .wz-q{background:var(--white);border-radius:24px;padding:15px 18px;box-shadow:var(--shadow);font-weight:900;font-size:19px;line-height:1.3;text-align:center;margin:10px 0 14px;position:relative}
 .wz-q:before{content:"";position:absolute;top:-10px;left:50%;margin-left:-10px;border:10px solid transparent;border-top:0;border-bottom-color:var(--white)}
 .wz-q small{display:block;font-size:14px;color:var(--muted);font-weight:700;margin-top:6px}
@@ -345,7 +364,14 @@ h3{font-size:15px;margin:16px 2px 8px;font-weight:900}
 const API_URL = 'https://script.google.com/macros/s/AKfycbyStbnjma9PcSq1b2zzknErr40PPbMFu1XoL8XHs0x_FH-dmKMXGtwgmAlHIMa4oLOQ0Q/exec';
 // =================================================================
 
-const VERSION = '1.0.1';
+// ====== 2. AHENTE PORTAL (for GCash renewals) ===================
+// Your Ahente Portal Apps Script web app URL (the one ending in /exec)
+const AHENTE_API_URL = 'https://script.google.com/macros/s/AKfycbx65KYKJmgRDwWwN__Ncn_FJ71LHgH2cL_lRjXbPCrh5qiH_jIUu9_oh1ITEwA4_rwrzg/exec';
+// Your GCash QR image (upload it to GitHub next to this index.html)
+const QR_IMG = 'gcash-qr.png';
+// =================================================================
+
+const VERSION = '1.1.0';
 const qs = new URLSearchParams(location.search);
 // Puscart and Kwentoink live on the same website, so everything here uses the "pc_" prefix
 const CODE = (() => {
@@ -2133,10 +2159,146 @@ function gate(mood, title, msg, btn) {
 function gateCheck() {
   if (!S.sub) return false;
   if (S.sub.state === 'invalid') { gate('sad', L('Hindi gumagana ang link na ito', "This link doesn't work"), L('Baka luma na ang link. Humingi ng bagong Puscart link sa owner ng tindahan.', 'It may be an old link. Ask the store owner for the new Puscart link.')); return true; }
-  if (S.sub.state === 'expired') { gate('sad', L('Naka-pause ang Puscart mo', 'Your Puscart is paused'), L('Tapos na ang trial o subscription. Ligtas ang lahat ng benta at paninda mo! 💗<br><br>', 'Your trial or subscription has ended. All your sales and items are safe! 💗<br><br>') + esc(S.support), L('Subukan ulit', 'Check again')); return true; }
+  if (S.sub.state === 'expired' && S.sub.reason === 'paused') { gate('sad', L('Naka-pause ang Puscart mo', 'Your Puscart is paused'), L('Tapos na ang trial o subscription. Ligtas ang lahat ng benta at paninda mo! 💗<br><br>', 'Your trial or subscription has ended. All your sales and items are safe! 💗<br><br>') + esc(S.support), L('Subukan ulit', 'Check again')); return true; }
+  if (subEnded()) { if (gateEl) { gateEl.remove(); gateEl = null; } if (!payEl || payEl._closable) payLock(false); return true; }
   if (gateEl) { gateEl.remove(); gateEl = null; }
+  if (payEl && !payEl._closable) closePay();
   return false;
 }
+
+/* ---------- renewal: GCash lock screen + reminder bar ---------- */
+const todayYmd = () => ymd(new Date());
+// works offline too: the end date is saved on the phone
+function subEnded() {
+  const s = S.sub; if (!s || s.state === 'invalid') return false;
+  if (s.state === 'expired') return true;
+  return !!s.until && s.until < todayYmd();
+}
+function daysLeftLocal() {
+  if (!S.sub || !S.sub.until) return null;
+  return Math.round((new Date(S.sub.until + 'T00:00:00') - new Date(todayYmd() + 'T00:00:00')) / 86400000);
+}
+async function ahente(action, payload) {
+  const ctrl = new AbortController(), t = setTimeout(() => ctrl.abort(), 60000);
+  try {
+    const r = await fetch(AHENTE_API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action, app: 'pc', code: CODE }, payload || {})), redirect: 'follow', signal: ctrl.signal });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Server error');
+    return j;
+  } finally { clearTimeout(t); }
+}
+const PAY_ERR = {
+  BAD_REF: ['Mali ang reference number. Kopyahin ito mula sa GCash receipt.', 'Wrong reference number. Copy it from the GCash receipt.'],
+  BAD_IMAGE: ['Hindi mabasa ang screenshot. Pumili ng ibang picture.', "Can't read the screenshot. Pick another picture."],
+  DUP_REF: ['Naipadala na ang reference number na ito.', 'This reference number was already sent.'],
+  TOO_MANY: ['Masyadong maraming padala. Subukan ulit mamaya.', 'Too many tries. Please try again later.'],
+  STORE_NOT_FOUND: ['Hindi makita ang tindahan. Kausapin kami.', "Can't find your store. Please message us."],
+  BAD_STORE: ['Hindi makita ang tindahan. Kausapin kami.', "Can't find your store. Please message us."]
+};
+const payErr = e => { const m = PAY_ERR[e && e.message]; return m ? L(m[0], m[1]) : (navigator.onLine ? L('May problema. Subukan ulit.', 'Something went wrong. Try again.') : L('Walang internet. Kumonekta muna.', 'No internet. Please connect first.')); };
+// big iPhone photos → small JPEG before sending
+function shrinkImage(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const max = 1400, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.8));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('BAD_IMAGE')); };
+    img.src = url;
+  });
+}
+let payEl = null, payPoll = null;
+function closePay() { clearInterval(payPoll); if (payEl) { payEl.remove(); payEl = null; } }
+function payLock(closable) {
+  closePay();
+  let info = LS.get(K('payinfo'), null), months = 1, shot = '', showForm = false, busy = false;
+  payEl = screen('<div id="pl"></div>'); payEl.style.zIndex = 150; payEl._closable = !!closable;
+  const trial = S.sub && S.sub.state === 'trial';
+  const draw = () => {
+    if (!payEl) return;
+    const box = payEl.querySelector('#pl');
+    const amt = info ? (months === 12 ? info.amount12 : info.amount1) : null;
+    const c = info && info.claim;
+    const pending = c && c.status === 'pending', rejected = c && c.status === 'rejected';
+    const head = closable
+      ? [L('Malapit nang matapos ang ' + (trial ? 'trial' : 'subscription') + ' mo', 'Your ' + (trial ? 'trial' : 'subscription') + ' ends soon'), L('Mag-renew na para tuloy-tuloy ang benta. 💗', 'Renew now to keep selling. 💗')]
+      : [L('Tapos na ang ' + (S.sub && S.sub.until && trial ? 'free trial' : 'subscription') + ' mo', 'Your ' + (trial ? 'free trial' : 'subscription') + ' has ended'), L('Ligtas lahat ng benta at paninda mo! Magbayad lang para mabuksan ulit. 💗', 'All your sales and items are safe! Just pay to open it again. 💗')];
+    let h = '<div class="pl-head"><div class="pl-m">' + mascot(closable ? 'think' : 'sad') + '</div><div><b>' + head[0] + '</b><small>' + head[1] + '</small></div></div>';
+    if (pending) h += '<div class="pl-box wait">⏳ ' + L('Natanggap namin ang bayad mo (Ref ' + esc(c.ref) + '). Hinihintay na lang ang confirmation. Kusang mabubuksan ang Puscart pag na-confirm na.', 'We got your payment (Ref ' + esc(c.ref) + '). Waiting for confirmation. Puscart opens by itself once confirmed.') + '</div>';
+    if (rejected) h += '<div class="pl-box bad">⚠️ ' + esc(c.note || L('Hindi nakita ang bayad. Paki-check ulit.', "We couldn't find the payment. Please check again.")) + '</div>';
+    h += '<div class="card"><img class="pl-qr" src="' + QR_IMG + '" alt="GCash QR">' +
+      (info && info.amount12 ? '<div class="pl-seg"><button data-m="1" class="' + (months === 1 ? 'on' : '') + '">' + L('1 buwan', '1 month') + '</button><button data-m="12" class="' + (months === 12 ? 'on' : '') + '">' + L('1 taon', '1 year') + '</button></div>' : '') +
+      '<div class="pl-amt">' + (amt != null ? '₱' + Number(amt).toLocaleString('en-PH') : '') + '<small>' + esc(info ? info.plan : 'Puscart') + (info && info.store ? ' · ' + esc(info.store) : '') + '</small></div>' +
+      (info && info.gcash ? '<div class="muted small b" style="text-align:center;margin-top:6px">GCash: <b>' + esc(info.gcash) + '</b>' + (info.gcashName ? ' · ' + esc(info.gcashName) : '') + '</div>' : '') +
+      '<div class="pl-row"><a class="btn soft" href="' + QR_IMG + '" download="Puscart-GCash-QR.png">💾 ' + L('I-save ang QR', 'Save the QR') + '</a></div>' +
+      '<div class="pl-steps" style="margin-top:10px">' + L('1️⃣ I-save ang QR.<br>2️⃣ Sa GCash: <b>Pay QR → Upload QR</b>, piliin ang na-save na QR. (Pwede rin Maya o bank app.)<br>3️⃣ I-screenshot ang receipt, tapos i-send dito sa baba.', '1️⃣ Save the QR.<br>2️⃣ In GCash: <b>Pay QR → Upload QR</b>, pick the saved QR. (Maya or a bank app works too.)<br>3️⃣ Screenshot the receipt and send it below.') + '</div></div>';
+    if (!pending || showForm) {
+      h += '<div class="card"><b>✅ ' + L('Nakabayad na ako', "I've paid") + '</b>' +
+        '<div class="field" style="margin-top:10px"><label>' + L('Reference No.', 'Reference No.') + ' <small>' + L('(nasa GCash receipt)', '(on the GCash receipt)') + '</small></label><input class="inp" id="pl-ref" inputmode="numeric" autocomplete="off" placeholder="hal. 1234 567 891011"></div>' +
+        '<div class="field"><label>' + L('Pangalan ng nagbayad', 'Name of payer') + ' <small>' + L('(opsyonal)', '(optional)') + '</small></label><input class="inp" id="pl-who" value="' + esc(myName() || '') + '"></div>' +
+        '<label class="pl-file" id="pl-fl">📷 ' + (shot ? L('Palitan ang screenshot', 'Change screenshot') + '<img src="' + shot + '">' : L('Piliin ang screenshot ng receipt', 'Choose the receipt screenshot')) + '<input type="file" accept="image/*" id="pl-file" style="display:none"></label>' +
+        '<button class="btn pink" id="pl-send" style="margin-top:12px">' + L('Ipadala', 'Send') + '</button></div>';
+    } else h += '<button class="pl-link" id="pl-again">' + L('May mali? Magpadala ulit', 'Made a mistake? Send again') + '</button>';
+    if (!closable) h += '<button class="btn soft" id="pl-check" style="margin-top:4px">🔄 ' + L('Tingnan ulit', 'Check again') + '</button>';
+    else h += '<button class="btn soft" id="pl-close" style="margin-top:4px">' + L('Mamaya na', 'Later') + '</button>';
+    h += '<div class="muted small b" style="text-align:center;margin:14px 0 6px">' + esc(S.support || '') + '</div>';
+    box.innerHTML = h;
+    box.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { months = +b.dataset.m; keep(); draw(); });
+    const fi = box.querySelector('#pl-file');
+    if (fi) fi.onchange = async () => { const f = fi.files && fi.files[0]; if (!f) return; try { keep(); shot = await shrinkImage(f); draw(); } catch (e) { toast(payErr(e), 'sad'); } };
+    const ag = box.querySelector('#pl-again'); if (ag) ag.onclick = () => { showForm = true; draw(); };
+    const ck = box.querySelector('#pl-check'); if (ck) ck.onclick = () => location.reload();
+    const cl = box.querySelector('#pl-close'); if (cl) cl.onclick = closePay;
+    const sd = box.querySelector('#pl-send'); if (sd) sd.onclick = send;
+    if (keep.ref) { const r = box.querySelector('#pl-ref'); if (r) r.value = keep.ref; }
+    if (keep.who != null) { const w = box.querySelector('#pl-who'); if (w) w.value = keep.who; }
+  };
+  // remember what was typed when the screen redraws
+  const keep = () => { const r = payEl && payEl.querySelector('#pl-ref'), w = payEl && payEl.querySelector('#pl-who'); if (r) keep.ref = r.value; if (w) keep.who = w.value; };
+  async function send() {
+    if (busy) return; keep();
+    const ref = String(keep.ref || '').replace(/\s+/g, '');
+    if (!/^[A-Za-z0-9]{6,20}$/.test(ref)) { toast(L('Ilagay ang Reference No. mula sa GCash receipt.', 'Enter the Reference No. from the GCash receipt.'), 'think'); return; }
+    if (!shot) { toast(L('Piliin muna ang screenshot ng receipt.', 'Choose the receipt screenshot first.'), 'think'); return; }
+    if (DEMO) { toast(L('Demo lang ito — walang naipadala.', 'This is a demo — nothing was sent.'), 'think'); return; }
+    busy = true; const b = payEl.querySelector('#pl-send'); b.disabled = true; b.textContent = L('Ipinapadala…', 'Sending…');
+    try {
+      const j = await ahente('customerPay', { ref, payer: keep.who || '', months, image: shot });
+      info = Object.assign({}, info || {}, { claim: j.claim }); LS.set(K('payinfo'), info);
+      shot = ''; showForm = false; keep.ref = '';
+      toast(L('Naipadala! Hintayin ang confirmation. 💗', 'Sent! Please wait for confirmation. 💗'), 'happy'); draw();
+    } catch (e) { toast(payErr(e), 'sad'); b.disabled = false; b.textContent = L('Ipadala', 'Send'); }
+    finally { busy = false; }
+  }
+  async function refresh() {
+    if (DEMO || !navigator.onLine || !payEl) return;
+    try {
+      const j = await ahente('payInfo');
+      // paid and confirmed → open Puscart again
+      if (!closable && j.state !== 'expired' && j.until && j.until >= todayYmd()) { location.reload(); return; }
+      keep(); info = j; LS.set(K('payinfo'), info); if (info.amount12 == null) months = 1; draw();
+    } catch (e) { console.warn(e); }
+  }
+  draw(); refresh();
+  payPoll = setInterval(() => { if (info && info.claim && info.claim.status === 'pending') refresh(); }, 60000);
+}
+function renewBanner() {
+  const old = $('#renewBar'); if (old) old.remove();
+  const s = S.sub, d = daysLeftLocal();
+  if (DEMO || !s || s.reason === 'paused' || !(s.state === 'trial' || s.state === 'active') || d === null || d < 0 || d > 3) return;
+  if (LS.get(K('rbHide'), '') === todayYmd()) return;
+  const what = s.state === 'trial' ? 'trial' : 'subscription';
+  const el = document.createElement('div'); el.id = 'renewBar'; el.className = 'renew-bar';
+  el.innerHTML = '⏰<span>' + (d === 0 ? L('Huling araw na ng ' + what + ' mo ngayon!', 'Your ' + what + ' ends today!') : L('Matatapos ang ' + what + ' mo sa ' + d + ' araw.', 'Your ' + what + ' ends in ' + d + ' day' + (d > 1 ? 's' : '') + '.')) + '</span>' +
+    '<button id="rb-pay">' + L('Mag-renew', 'Renew') + '</button><button class="x" id="rb-x" aria-label="Close">×</button>';
+  const top = $('#app .top'); if (!top) return; top.after(el);
+  el.querySelector('#rb-pay').onclick = () => payLock(true);
+  el.querySelector('#rb-x').onclick = () => { LS.set(K('rbHide'), todayYmd()); el.remove(); };
+}
+
 
 /* =================================================================
    BOOT
@@ -2172,6 +2334,7 @@ async function boot() {
   if (S.pinSet === false && isOwnerDevice() && (navigator.onLine || DEMO)) { showApp(); await createPinFlow(true); }
   showApp();
   if (!LS.get(K('tour'), false)) { go('sell'); await new Promise(r => setTimeout(r, 300)); await runTour(isOwner() || isOwnerDevice() ? 'full' : 'short'); }
+  renewBanner();
   flush(); loadLog();
 }
 let appShown = false;
